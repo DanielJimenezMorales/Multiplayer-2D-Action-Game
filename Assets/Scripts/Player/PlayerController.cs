@@ -140,7 +140,7 @@ public class PlayerController : NetworkBehaviour
             player.State.Value = PlayerState.Grounded;
         }
 
-        if ((player.State.Value != PlayerState.Hooked))
+        if (player.State.Value != PlayerState.Hooked)
         {
             rb.velocity = new Vector2(input.x * speed, rb.velocity.y);
         }

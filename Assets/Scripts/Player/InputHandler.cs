@@ -33,9 +33,7 @@ public class InputHandler : NetworkBehaviour
     private void Awake()
     {
         _move.AddCompositeBinding("2DVector")
-            .With("Up", "<Keyboard>/w")
             .With("Left", "<Keyboard>/a")
-            .With("Down", "<Keyboard>/s")
             .With("Right", "<Keyboard>/d");
 
         _jump.AddBinding("<Keyboard>/space");
