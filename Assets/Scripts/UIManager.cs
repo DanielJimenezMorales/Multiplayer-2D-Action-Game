@@ -47,6 +47,21 @@ public class UIManager : MonoBehaviour
         buttonClient.onClick.AddListener(() => StartClient());
         buttonServer.onClick.AddListener(() => StartServer());
         ActivateMainMenu();
+
+        NetworkManager.Singleton.OnServerStarted += OnServerReady;
+    }
+
+    /// <summary>
+    /// This method will be called whenever the server is ready to be used.
+    /// </summary>
+    private void OnServerReady()
+    {
+        if(NetworkManager.Singleton.IsServer)
+        {
+            //Spawn the Lobby if we are the server.
+            GameObject loobyGameObject = Instantiate(lobbyPrefab);
+            loobyGameObject.GetComponent<NetworkObject>().Spawn();
+        }
     }
 
     #endregion
@@ -117,14 +132,6 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region Netcode Related Methods
-
-    /// <summary>
-    /// This method is called when there are enough players to start a match.
-    /// </summary>
-    private void StartGame()
-    {
-    }
-
     private void StartHost()
     {
         NetworkManager.Singleton.StartHost();
@@ -139,33 +146,13 @@ public class UIManager : MonoBehaviour
             transport.ConnectionData.Address = ip;
         }
         NetworkManager.Singleton.StartClient();
-
-        //If we are the client we wait until everything has loaded from the server and then we subscribe to lobby delegates (with LoadLobby method)
-        NetworkManager.Singleton.SceneManager.OnSynchronizeComplete += LoadLobby;
         
         ActivateLobby();
-    }
-
-    private void LoadLobby(ulong clienId)
-    {
-        Lobby lobbyr = FindObjectOfType<Lobby>();
-        lobbyr.OnPlayerConnectedToLobby += playerLobbyUIController.AddPlayer;
     }
 
     private void StartServer()
     {
         NetworkManager.Singleton.StartServer();
-
-        //If we are the server, we instantiate and initialize the lobby
-        GameObject lobbygo = GameObject.Instantiate(lobbyPrefab);
-        Lobby lobbyComponent = lobbygo.GetComponent<Lobby>();
-        lobbyComponent.OnPlayerConnectedToLobby += playerLobbyUIController.AddPlayer;
-        lobbygo.GetComponent<NetworkObject>().Spawn();
-
-        //This is for testing purposes
-        PlayerLobbyData dd = new PlayerLobbyData("Paquito", 38);
-        lobbyComponent.AddPlayerToLobby(dd);
-
         ActivateLobby();
     }
 

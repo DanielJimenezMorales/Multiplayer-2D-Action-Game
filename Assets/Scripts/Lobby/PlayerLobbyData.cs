@@ -20,6 +20,11 @@ public struct PlayerLobbyData : INetworkSerializable, IEquatable<PlayerLobbyData
         this.playerId = playerId;
     }
 
+    /// <summary>
+    /// In order to use this struct as T value of the NetworkList we need to serialize it.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="serializer"></param>
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref playerName);

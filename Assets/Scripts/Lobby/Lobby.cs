@@ -5,117 +5,118 @@ using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.Assertions;
 
+[RequireComponent(typeof(NetworkObject))]
 public class Lobby : NetworkBehaviour
 {
     private NetworkList<PlayerLobbyData> playersInLobby;
-    public event Action<PlayerLobbyData> OnPlayerConnectedToLobby;
+    [SerializeField] private int lobbyCapacity = 5;
+    private PlayerLobbyUIController playerLobbyUIController;
 
     private void Awake()
     {
-        Init();
-    }
-
-    /// <summary>
-    /// This method initializes the lobby
-    /// </summary>
-    private void Init()
-    {
+        //Init networkList
         playersInLobby = new NetworkList<PlayerLobbyData>();
 
-        //If we are the client we check if there are already players in lobby (in case we are not the first one going into the lobby).
-        if (IsClient)
-        {
-            foreach (PlayerLobbyData pld in playersInLobby)
-            {
-                OnPlayerConnectedToLobby?.Invoke(pld);
-            }
-        }
-
-        //Subscribe to the network variable event
-        playersInLobby.OnListChanged += ModifyLobbyPlayers;
+        //Init the UI Lobby.
+        playerLobbyUIController = FindObjectOfType<PlayerLobbyUIController>(true);
+        Assert.IsNotNull(playerLobbyUIController, "[Lobby at Init]: The playerLobbyUIController component is null");
+        playerLobbyUIController.Init(lobbyCapacity);
     }
 
-    /// <summary>
-    /// This method is called when NetworkObject.Spawn() is called (This should be call only from the server as it is the one who instantiate the lobby)
-    /// </summary>
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        
-        //If we are the server subscribe to the methods when a player connect or disconnect to the lobby
+        Init();
+    }
+
+    private void Init()
+    {
+        //Init the Lobby (Only being a server)
         if (IsServer)
         {
-            Debug.Log("Inicializo");
+            Debug.Log("[SERVER] Initializing Lobby...");
+            playersInLobby.OnListChanged += UpdateLobbyPlayerList;
             NetworkManager.Singleton.OnClientConnectedCallback += AddPlayerToLobby;
             NetworkManager.Singleton.OnClientDisconnectCallback += RemovePlayerFromLobby;
         }
     }
 
-    private void OnDisable()
+    public override void OnNetworkDespawn()
     {
-        playersInLobby.OnListChanged -= ModifyLobbyPlayers;
+        base.OnNetworkDespawn();
+        Dispose();
+    }
 
-        if(IsServer)
+    private void Dispose()
+    {
+        //Dispose the Lobby (only being a server)
+        if (IsServer)
         {
+            playersInLobby.OnListChanged -= UpdateLobbyPlayerList;
             NetworkManager.Singleton.OnClientConnectedCallback -= AddPlayerToLobby;
             NetworkManager.Singleton.OnClientDisconnectCallback -= RemovePlayerFromLobby;
         }
     }
 
-    private void AddPlayerToLobby(ulong playerID)
-    {
-        if (IsServer)
-        {
-            PlayerLobbyData newPlayerLobbyData = new PlayerLobbyData("Juan", playerID);
-            Debug.Log("Se conecta Juan");
-            playersInLobby.Add(newPlayerLobbyData);
-        }
-    }
-
-    public void AddPlayerToLobby(PlayerLobbyData newPlayerLobbyData)
-    {
-        if (IsServer)
-        {
-            Debug.Log("Se conecta Juan");
-            playersInLobby.Add(newPlayerLobbyData);
-        }
-    }
-
-    private void RemovePlayerFromLobby(ulong playerID)
+    /// <summary>
+    /// This method adds a player to the lobby when it gets connected.
+    /// </summary>
+    /// <param name="clientId"></param>
+    private void AddPlayerToLobby(ulong clientId)
     {
         if(IsServer)
         {
-            PlayerLobbyData playerDisconnected = new PlayerLobbyData();
-            foreach(PlayerLobbyData pld in playersInLobby)
-            {
-                if(pld.playerId == playerID)
-                {
-                    playerDisconnected = pld;
-                    break;
-                }
-            }
-
-            bool succesfullyRemoved = playersInLobby.Remove(playerDisconnected);
-
-            Assert.IsFalse(succesfullyRemoved, $"[Lobby at RemovePlayerFromLobby]: The player [{playerDisconnected.playerName}] is not in the playersLobbyList.");
+            PlayerLobbyData playerLobbyData = new PlayerLobbyData("Jugador" + clientId.ToString(), clientId);
+            playersInLobby.Add(playerLobbyData);
         }
     }
 
-    private void ModifyLobbyPlayers(NetworkListEvent<PlayerLobbyData> change)
+    /// <summary>
+    /// This method removes a player from the lobby when it gets disconnected.
+    /// </summary>
+    /// <param name="clientId"></param>
+    private void RemovePlayerFromLobby(ulong clientId)
     {
-        Debug.Log("MMM");
-        if (IsClient)
+        if(IsServer)
         {
-            Debug.Log("MMM2");
-            if (change.Type.CompareTo(NetworkListEvent<PlayerLobbyData>.EventType.Add) == 0)
+            PlayerLobbyData disconnectedPlayer = SearchPlayerWithID(clientId);
+            Assert.IsTrue(disconnectedPlayer.playerId == ulong.MaxValue && disconnectedPlayer.playerName == System.String.Empty, $"[Lobby at RemovePlayerFromLobby]: Couldn't find the player with {clientId} ID");
+            
+            playersInLobby.Remove(disconnectedPlayer);
+        }
+    }
+
+    /// <summary>
+    /// This method searches for a player inside the lobby
+    /// </summary>
+    /// <param name="clientId"></param>
+    /// <returns>If the player exist, it returns it. If it doesn't, it returns an invalid player</returns>
+    private PlayerLobbyData SearchPlayerWithID(ulong clientId)
+    {
+        foreach(PlayerLobbyData playerLobbyData in playersInLobby)
+        {
+            if(playerLobbyData.playerId == clientId)
             {
-                Debug.Log($"{playersInLobby[playersInLobby.Count - 1]} has joint to the lobby!");
-                OnPlayerConnectedToLobby?.Invoke(playersInLobby[playersInLobby.Count - 1]);
-            }
-            else if(change.Type.CompareTo(NetworkListEvent<PlayerLobbyData>.EventType.Remove) == 0)
-            {
-                Debug.Log($"Someone has left the lobby!");
+                return playerLobbyData;
             }
         }
+
+        //If doesn't found it returns an invalid PlayerLobbyData
+        return new PlayerLobbyData(System.String.Empty, ulong.MaxValue);
+    }
+
+    /// <summary>
+    /// Updates the lobby player list UI whenever there is a change.
+    /// </summary>
+    /// <param name="changeEvent"></param>
+    private void UpdateLobbyPlayerList(NetworkListEvent<PlayerLobbyData> changeEvent)
+    {
+        List<PlayerLobbyData> players = new List<PlayerLobbyData>();
+        foreach(PlayerLobbyData playerData in playersInLobby)
+        {
+            players.Add(playerData);
+        }
+
+        playerLobbyUIController.UpdatePlayers(players);
     }
 }

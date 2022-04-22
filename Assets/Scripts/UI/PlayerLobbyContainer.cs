@@ -4,15 +4,22 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
 
+/// <summary>
+/// This class represent a Row of the lobby. It displays the necessary information in the UI. For example the player's name.
+/// </summary>
 public class PlayerLobbyContainer : MonoBehaviour
 {
-    [SerializeField] private Text textComponent;
+    private Text textComponent;
 
-    private void Awake()
+    public void Init()
     {
-        textComponent = GetComponentInChildren<Text>();
+        textComponent = GetComponentInChildren<Text>(true);
     }
 
+    /// <summary>
+    /// Updates the player's name.
+    /// </summary>
+    /// <param name="text"></param>
     public void SetText(string text)
     {
         Assert.IsNotNull(textComponent, "[PlayerLobbyContainer at SetText]: The text component is null");
