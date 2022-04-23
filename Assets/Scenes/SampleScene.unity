@@ -752,6 +752,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1279191221 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2503596978575127790, guid: ef5e6e7b389e41c49a739316342228b8, type: 3}
+  m_PrefabInstance: {fileID: 1737133369708097605}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a04b90e9bad1344439e38b2a071ae6ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1528100692
 GameObject:
   m_ObjectHideFlags: 0
@@ -895,6 +906,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1936960621 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8347286088139268645, guid: ef5e6e7b389e41c49a739316342228b8, type: 3}
+  m_PrefabInstance: {fileID: 1737133369708097605}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2048066467 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1737133371219162086, guid: ef5e6e7b389e41c49a739316342228b8, type: 3}
@@ -1100,6 +1116,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1332957947535845843, guid: 24b3e92d40fdae54088fb6f13ef5342c, type: 3}
+      propertyPath: lobby
+      value: 
+      objectReference: {fileID: 1936960621}
+    - target: {fileID: 1332957947535845843, guid: 24b3e92d40fdae54088fb6f13ef5342c, type: 3}
       propertyPath: mainMenu
       value: 
       objectReference: {fileID: 2048066467}
@@ -1135,6 +1155,10 @@ PrefabInstance:
       propertyPath: heartsUI.Array.data[2]
       value: 
       objectReference: {fileID: 1758972317}
+    - target: {fileID: 1332957947535845843, guid: 24b3e92d40fdae54088fb6f13ef5342c, type: 3}
+      propertyPath: playerLobbyUIController
+      value: 
+      objectReference: {fileID: 1279191221}
     - target: {fileID: 1332957947535845852, guid: 24b3e92d40fdae54088fb6f13ef5342c, type: 3}
       propertyPath: m_Name
       value: UIManager
@@ -1148,6 +1172,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 111309647909490650, guid: ef5e6e7b389e41c49a739316342228b8, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1737133369411236459, guid: ef5e6e7b389e41c49a739316342228b8, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -1235,6 +1263,14 @@ PrefabInstance:
     - target: {fileID: 1737133369411236463, guid: ef5e6e7b389e41c49a739316342228b8, type: 3}
       propertyPath: m_Name
       value: Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 1737133371219162080, guid: ef5e6e7b389e41c49a739316342228b8, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1737133371219162086, guid: ef5e6e7b389e41c49a739316342228b8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ef5e6e7b389e41c49a739316342228b8, type: 3}

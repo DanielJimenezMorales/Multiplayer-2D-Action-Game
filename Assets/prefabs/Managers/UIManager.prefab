@@ -52,6 +52,8 @@ MonoBehaviour:
   buttonClient: {fileID: 0}
   buttonServer: {fileID: 0}
   inputFieldIP: {fileID: 0}
+  lobby: {fileID: 0}
+  lobbyPrefab: {fileID: 4880130966508990853, guid: 49a5306f65e329e4eb9d2fa10da832b7, type: 3}
   inGameHUD: {fileID: 0}
   heartsUI:
   - {fileID: 0}

@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour
     #region Variables
 
     UnityTransport transport;
+
     [SerializeField] Sprite[] hearts = new Sprite[3];
 
     [Header("Main Menu")]
@@ -19,6 +20,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button buttonClient;
     [SerializeField] private Button buttonServer;
     [SerializeField] private InputField inputFieldIP;
+
+    [Header("Lobby")]
+    [SerializeField] private GameObject lobby;
+    public GameObject lobbyPrefab;
+    [SerializeField] private PlayerLobbyUIController playerLobbyUIController;
 
     [Header("In-Game HUD")]
     [SerializeField] private GameObject inGameHUD;
@@ -30,34 +36,60 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
-        transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+        //transport = NetworkManager.Singleton.GetComponent<UnityTransport>(); Puesto en el Start para que funcione
     }
 
     private void Start()
     {
+        transport = NetworkManager.Singleton.gameObject.GetComponent<UnityTransport>();
+
         buttonHost.onClick.AddListener(() => StartHost());
         buttonClient.onClick.AddListener(() => StartClient());
         buttonServer.onClick.AddListener(() => StartServer());
         ActivateMainMenu();
+
+        NetworkManager.Singleton.OnServerStarted += OnServerReady;
+    }
+
+    /// <summary>
+    /// This method will be called whenever the server is ready to be used.
+    /// </summary>
+    private void OnServerReady()
+    {
+        if(NetworkManager.Singleton.IsServer)
+        {
+            //Spawn the Lobby if we are the server.
+            GameObject loobyGameObject = Instantiate(lobbyPrefab);
+            loobyGameObject.GetComponent<NetworkObject>().Spawn();
+        }
     }
 
     #endregion
 
     #region UI Related Methods
 
-    private void ActivateMainMenu()
+    public void ActivateMainMenu()
     {
         mainMenu.SetActive(true);
         inGameHUD.SetActive(false);
+        lobby.SetActive(false);
     }
 
-    private void ActivateInGameHUD()
+    public void ActivateInGameHUD()
     {
         mainMenu.SetActive(false);
         inGameHUD.SetActive(true);
+        lobby.SetActive(false);
 
         // for test purposes
         UpdateLifeUI(Random.Range(1, 6));
+    }
+
+    private void ActivateLobby()
+    {
+        lobby.SetActive(true);
+        mainMenu.SetActive(false);
+        inGameHUD.SetActive(false);
     }
 
     public void UpdateLifeUI(int hitpoints)
@@ -100,11 +132,10 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region Netcode Related Methods
-
     private void StartHost()
     {
         NetworkManager.Singleton.StartHost();
-        ActivateInGameHUD();
+        ActivateLobby();
     }
 
     private void StartClient()
@@ -115,13 +146,14 @@ public class UIManager : MonoBehaviour
             transport.ConnectionData.Address = ip;
         }
         NetworkManager.Singleton.StartClient();
-        ActivateInGameHUD();
+        
+        ActivateLobby();
     }
 
     private void StartServer()
     {
         NetworkManager.Singleton.StartServer();
-        ActivateInGameHUD();
+        ActivateLobby();
     }
 
     #endregion
