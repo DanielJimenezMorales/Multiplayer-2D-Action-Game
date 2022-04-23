@@ -58,9 +58,9 @@ public class UIManager : MonoBehaviour
     {
         if(NetworkManager.Singleton.IsServer)
         {
-            //Spawn the Lobby if we are the server.
-            GameObject loobyGameObject = Instantiate(lobbyPrefab);
-            loobyGameObject.GetComponent<NetworkObject>().Spawn();
+            // The server spawns the lobby
+            GameObject lobbyGameObject = Instantiate(lobbyPrefab);
+            lobbyGameObject.GetComponent<NetworkObject>().Spawn();
         }
     }
 

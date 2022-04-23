@@ -6,13 +6,14 @@ using Unity.Netcode;
 using UnityEngine;
 
 /// <summary>
-/// This struct will contains the necessary info for displaying a player in the lobby screen. It needs to implement INetworkSerializable and IEquatable<T> since it is made for a NetworkList<T>
+/// This struct contains player information to be displayed on the lobby screen. It needs to implement 
+/// INetworkSerializable and IEquatable<T> since it is made for a NetworkList<T>
 /// https://github.com/Unity-Technologies/com.unity.multiplayer.docs/issues/409
 /// </summary>
 public struct PlayerLobbyData : INetworkSerializable, IEquatable<PlayerLobbyData>
 {
     #region Variables
-    public FixedString32Bytes playerName; //Using this type instead of string because with the normal string the NetworkList declaration of this struct fails.
+    public FixedString32Bytes playerName; // Using this type instead of string because with the normal string the NetworkList declaration of this struct fails.
     public ulong playerId;
     #endregion
 
