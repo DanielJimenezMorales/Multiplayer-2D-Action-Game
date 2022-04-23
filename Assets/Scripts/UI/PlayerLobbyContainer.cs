@@ -5,7 +5,7 @@ using UnityEngine.Assertions;
 using UnityEngine.UI;
 
 /// <summary>
-/// This class represent a Row of the lobby. It displays the necessary information in the UI. For example the player's name.
+/// This class represents a row of the lobby. It displays important information on screen such as the player's name.
 /// </summary>
 public class PlayerLobbyContainer : MonoBehaviour
 {
