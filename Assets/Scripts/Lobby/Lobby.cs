@@ -5,18 +5,27 @@ using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.Assertions;
 
+/// <summary>
+/// This class is the main one of the lobby. It manage all the logic of the lobby and communicates with every UI object of the lobby screen.
+/// </summary>
 [RequireComponent(typeof(NetworkObject))]
 public class Lobby : NetworkBehaviour
 {
-    private const int MINIMUM_PLAYERS_IN_LOBBY = 2;
-    private const int LOBBY_COUNTDOWN_TIME = 30;
+    #region Variables
+    private const int MINIMUM_PLAYERS_IN_LOBBY = 1; //How many players does the lobby need to start a match?
+    private const int LOBBY_COUNTDOWN_TIME = 10; //Whenever the players reach MINIMUM_PLAYERS_IN_LOBBY, How many seconds has the countdown before starting the match?
 
+    [SerializeField] private int lobbyCapacity = 5; //Which is the maximum players that the lobby is able to handle?
     private NetworkList<PlayerLobbyData> playersInLobby;
-    [SerializeField] private int lobbyCapacity = 5;
+
+    //UI Components
+    private UIManager uiManager;
     private PlayerLobbyUIController playerLobbyUIController;
     private LobbyCountdown lobbyCountdown;
     private LobbyInfoText lobbyInfoText;
+    #endregion
 
+    #region Unity Event Functions
     private void Awake()
     {
         //Init networkList
@@ -39,6 +48,10 @@ public class Lobby : NetworkBehaviour
         lobbyInfoText.Init();
         lobbyInfoText.SetText("Waiting for opponents...");
         lobbyInfoText.gameObject.SetActive(true);
+
+        //Init UIManager
+        uiManager = FindObjectOfType<UIManager>();
+        Assert.IsNotNull(lobbyInfoText, "[Lobby at Init]: The UIManager is null");
     }
 
     private void OnEnable()
@@ -46,20 +59,44 @@ public class Lobby : NetworkBehaviour
         //This events should be tracked by server and clients. That is the reason why we put them here and not in Init (Init is only for Server)
         playersInLobby.OnListChanged += UpdateLobbyPlayerList;
         playersInLobby.OnListChanged += CheckForCountdownVisibility;
+
+        lobbyCountdown.OnLobbyCountdownFinished += StartGame;
     }
 
     private void OnDisable()
     {
         playersInLobby.OnListChanged -= UpdateLobbyPlayerList;
         playersInLobby.OnListChanged -= CheckForCountdownVisibility;
-    }
 
+        lobbyCountdown.OnLobbyCountdownFinished -= StartGame;
+    }
+    #endregion
+
+    #region Netcode Functions
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
         Init();
     }
 
+
+    #endregion
+    /// <summary>
+    /// This method will start the lobby whenever the start condition turns to valid. In this case, when the lobby countdown reaches 0.
+    /// </summary>
+    private void StartGame()
+    {
+        //Activar InGameUI
+        uiManager.ActivateInGameHUD();
+
+        //Spawn Players
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+        Dispose();
+    }
     private void Init()
     {
         //Init the Lobby (Only being a server)
@@ -70,12 +107,6 @@ public class Lobby : NetworkBehaviour
             NetworkManager.Singleton.OnClientConnectedCallback += AddPlayerToLobby;
             NetworkManager.Singleton.OnClientDisconnectCallback += RemovePlayerFromLobby;
         }
-    }
-
-    public override void OnNetworkDespawn()
-    {
-        base.OnNetworkDespawn();
-        Dispose();
     }
 
     private void Dispose()
@@ -117,7 +148,7 @@ public class Lobby : NetworkBehaviour
     }
 
     /// <summary>
-    /// This method searches for a player inside the lobby
+    /// This method searches for a player inside the lobby.
     /// </summary>
     /// <param name="clientId"></param>
     /// <returns>If the player exist, it returns it. If it doesn't, it returns an invalid player</returns>
@@ -125,7 +156,6 @@ public class Lobby : NetworkBehaviour
     {
         foreach(PlayerLobbyData playerLobbyData in playersInLobby)
         {
-            Debug.Log(clientId);
             if(playerLobbyData.playerId.Equals(clientId))
             {
                 return playerLobbyData;

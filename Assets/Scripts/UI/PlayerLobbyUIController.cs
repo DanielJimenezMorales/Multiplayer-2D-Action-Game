@@ -9,10 +9,19 @@ using UnityEngine.Assertions;
 /// </summary>
 public class PlayerLobbyUIController : MonoBehaviour
 {
+    #region Variables
     [Tooltip("The lobby row to be instantiated")]
     [SerializeField] private GameObject playerLobbyContainerPrefab;
 
     private PlayerLobbyContainer[] playerLobbyContainers;
+    #endregion
+
+    #region Unity Event Functions
+    private void OnDisable()
+    {
+        ResetPlayers();
+    }
+    #endregion
 
     public void Init(int lobbyCapacity)
     {
@@ -29,11 +38,6 @@ public class PlayerLobbyUIController : MonoBehaviour
 
             playerLobbyContainers[i] = playerLobbyContainerComponent;
         }
-    }
-
-    private void OnDisable()
-    {
-        ResetPlayers();
     }
 
     /// <summary>

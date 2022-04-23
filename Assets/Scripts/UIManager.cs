@@ -75,7 +75,7 @@ public class UIManager : MonoBehaviour
         lobby.SetActive(false);
     }
 
-    private void ActivateInGameHUD()
+    public void ActivateInGameHUD()
     {
         mainMenu.SetActive(false);
         inGameHUD.SetActive(true);

@@ -11,8 +11,10 @@ using UnityEngine;
 /// </summary>
 public struct PlayerLobbyData : INetworkSerializable, IEquatable<PlayerLobbyData>
 {
+    #region Variables
     public FixedString32Bytes playerName; //Using this type instead of string because with the normal string the NetworkList declaration of this struct fails.
     public ulong playerId;
+    #endregion
 
     public PlayerLobbyData(FixedString32Bytes playerName, ulong playerId)
     {

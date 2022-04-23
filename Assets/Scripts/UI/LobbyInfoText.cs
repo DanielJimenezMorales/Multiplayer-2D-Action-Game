@@ -7,8 +7,10 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Text))]
 public class LobbyInfoText : MonoBehaviour
 {
+    #region Variables
     private Text textComponent;
-    
+    #endregion
+
     public void Init()
     {
         textComponent = GetComponent<Text>();

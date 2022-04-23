@@ -9,9 +9,12 @@ using Unity.Netcode;
 [RequireComponent(typeof(Button))]
 public class ExitFromLobbyUIButton : MonoBehaviour
 {
+    #region Variables
     private Button buttonComponent;
     private UIManager uiManager;
+    #endregion
 
+    #region Unity Event Functions
     private void Awake()
     {
         buttonComponent = GetComponent<Button>();
@@ -21,7 +24,7 @@ public class ExitFromLobbyUIButton : MonoBehaviour
     private void Start()
     {
         uiManager = FindObjectOfType<UIManager>(true);
-        Assert.IsNotNull(buttonComponent, "[ExitFromLobbyUIButton at Awake]: The UIManager is null");
+        Assert.IsNotNull(buttonComponent, "[ExitFromLobbyUIButton at Start]: The UIManager is null");
     }
 
     private void OnEnable()
@@ -33,6 +36,7 @@ public class ExitFromLobbyUIButton : MonoBehaviour
     {
         buttonComponent.onClick.RemoveListener(OnClickButton);
     }
+    #endregion
 
     private void OnClickButton()
     {
