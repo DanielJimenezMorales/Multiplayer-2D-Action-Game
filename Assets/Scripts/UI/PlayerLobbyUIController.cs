@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,6 +28,24 @@ public class PlayerLobbyUIController : MonoBehaviour
             playerLobbyContainerComponent.Init();
 
             playerLobbyContainers[i] = playerLobbyContainerComponent;
+        }
+    }
+
+    private void OnDisable()
+    {
+        ResetPlayers();
+    }
+
+    /// <summary>
+    /// This method is to reset the lobby. With this if we exit and enter again we will clean the previous lobby players list.
+    /// </summary>
+    private void ResetPlayers()
+    {
+        if (playerLobbyContainers == null) return;
+
+        foreach(PlayerLobbyContainer playerRow in playerLobbyContainers)
+        {
+            DeactivateLobbyRow(playerRow);
         }
     }
 

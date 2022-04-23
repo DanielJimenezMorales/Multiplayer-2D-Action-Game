@@ -68,7 +68,7 @@ public class UIManager : MonoBehaviour
 
     #region UI Related Methods
 
-    private void ActivateMainMenu()
+    public void ActivateMainMenu()
     {
         mainMenu.SetActive(true);
         inGameHUD.SetActive(false);
