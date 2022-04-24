@@ -17,6 +17,7 @@ public class Lobby : NetworkBehaviour
 
     [SerializeField] private int lobbyCapacity = 5; // Which is the maximum players that the lobby is able to handle?
     private NetworkList<PlayerLobbyData> playersInLobby;
+    private NetworkVariable<int> lobbyCountdownSeconds;
 
     //UI Components
     private UIManager uiManager;
@@ -28,8 +29,9 @@ public class Lobby : NetworkBehaviour
     #region Unity Event Functions
     private void Awake()
     {
-        // Init networkList
+        //Init network variables
         playersInLobby = new NetworkList<PlayerLobbyData>();
+        lobbyCountdownSeconds = new NetworkVariable<int>();
 
         // Init the UI Players Lobby.
         playerLobbyUIController = FindObjectOfType<PlayerLobbyUIController>(true);
@@ -52,6 +54,11 @@ public class Lobby : NetworkBehaviour
         // Init UIManager
         uiManager = FindObjectOfType<UIManager>();
         Assert.IsNotNull(lobbyInfoText, "[Lobby at Init]: The UIManager is null");
+
+        if(IsClient)
+        {
+            ClientUpdateLobbyCountdown(lobbyCountdownSeconds.Value);
+        }
     }
 
     private void OnEnable()
@@ -59,17 +66,37 @@ public class Lobby : NetworkBehaviour
         // These events should be tracked both by the server and its clients.
         // Init is only for the server
         playersInLobby.OnListChanged += UpdateLobbyPlayerList;
-        playersInLobby.OnListChanged += CheckForCountdownVisibility;
 
-        lobbyCountdown.OnLobbyCountdownFinished += StartGame;
+        lobbyCountdownSeconds.OnValueChanged += UpdateLobbyCountdownSeconds;
+    }
+
+    private void UpdateLobbyCountdownSeconds(int previousValue, int newValue)
+    {
+        ClientUpdateLobbyCountdown(newValue);
+    }
+
+    private void ClientUpdateLobbyCountdown(int newValue)
+    {
+        if (!IsClient) return;
+
+        if (newValue == -1)
+        {
+            lobbyCountdown.gameObject.SetActive(false);
+            lobbyInfoText.gameObject.SetActive(true);
+        }
+        else
+        {
+            lobbyInfoText.gameObject.SetActive(false);
+            lobbyCountdown.SetCountdownText(newValue.ToString());
+            lobbyCountdown.gameObject.SetActive(true);
+        }
     }
 
     private void OnDisable()
     {
         playersInLobby.OnListChanged -= UpdateLobbyPlayerList;
-        playersInLobby.OnListChanged -= CheckForCountdownVisibility;
 
-        lobbyCountdown.OnLobbyCountdownFinished -= StartGame;
+        lobbyCountdownSeconds.OnValueChanged -= UpdateLobbyCountdownSeconds;
     }
     #endregion
 
@@ -85,12 +112,16 @@ public class Lobby : NetworkBehaviour
     /// <summary>
     /// This method will start the lobby whenever the start condition turns to valid. In this case, when the lobby countdown reaches 0.
     /// </summary>
+    [ClientRpc]
+    private void StartGameClientRpc()
+    {
+        StartGame();
+    }
+
     private void StartGame()
     {
         // Activate InGameUI
         uiManager.ActivateInGameHUD();
-
-        // Spawn Players
     }
 
     public override void OnNetworkDespawn()
@@ -130,6 +161,7 @@ public class Lobby : NetworkBehaviour
         {
             PlayerLobbyData playerLobbyData = new PlayerLobbyData("Jugador " + clientId.ToString(), clientId);
             playersInLobby.Add(playerLobbyData);
+            CheckForCountdownVisibility();
         }
     }
 
@@ -147,6 +179,7 @@ public class Lobby : NetworkBehaviour
                 $"[Lobby at RemovePlayerFromLobby]: Couldn't find the player with {clientId} ID");
             
             playersInLobby.Remove(disconnectedPlayer);
+            CheckForCountdownVisibility();
         }
     }
 
@@ -188,31 +221,62 @@ public class Lobby : NetworkBehaviour
     /// text depending on the current number of players in lobby.
     /// </summary>
     /// <param name="changeEvent"></param>
-    private void CheckForCountdownVisibility(NetworkListEvent<PlayerLobbyData> changeEvent)
+    private void CheckForCountdownVisibility()
     {
-        if(playersInLobby.Count < MINIMUM_PLAYERS_IN_LOBBY)
+        if (!IsServer) return;
+
+        if(playersInLobby.Count >= MINIMUM_PLAYERS_IN_LOBBY)
         {
-            // Hide countdown and show info text
-            if(!lobbyCountdown.GetIsStopped())
+            //Show countdown and hide info text
+            if(!lobbyCountdown.gameObject.activeInHierarchy)
             {
-                Debug.Log("Hide lobby countdown");
-                lobbyCountdown.StopCountdown();
-                lobbyCountdown.gameObject.SetActive(false);
+                Debug.Log("Show lobby countdown");
+                StartLobbyCountdown();
+            }
+
+            lobbyInfoText.gameObject.SetActive(false);
+        }
+        else
+        {
+            //Show info text and hide countdown
+            if(lobbyCountdown.gameObject.activeInHierarchy)
+            {
+                Debug.Log("Start lobby countdown");
+                StopLobbyCountdown();
             }
 
             lobbyInfoText.gameObject.SetActive(true);
         }
-        else
-        {
-            // Hide info text and show countdown
-            if(lobbyCountdown.GetIsStopped())
-            {
-                Debug.Log("Start lobby countdown");
-                lobbyCountdown.gameObject.SetActive(true);
-                lobbyCountdown.StartCountdown(LOBBY_COUNTDOWN_TIME);
-            }
+    }
 
-            lobbyInfoText.gameObject.SetActive(false);
+    private void StartLobbyCountdown()
+    {
+        lobbyCountdown.gameObject.SetActive(true);
+        lobbyCountdownSeconds.Value = LOBBY_COUNTDOWN_TIME;
+        lobbyCountdown.SetCountdownText(lobbyCountdownSeconds.Value.ToString());
+        StartCoroutine(LobbyCountdownCycle());
+    }
+
+    private void StopLobbyCountdown()
+    {
+        StopCoroutine(LobbyCountdownCycle());
+        lobbyCountdown.gameObject.SetActive(false);
+        lobbyCountdownSeconds.Value = -1;
+    }
+
+    private IEnumerator LobbyCountdownCycle()
+    {
+        while (lobbyCountdownSeconds.Value > 0)
+        {
+            yield return new WaitForSeconds(1f);
+            lobbyCountdownSeconds.Value--;
+            lobbyCountdown.SetCountdownText(lobbyCountdownSeconds.Value.ToString());
+        }
+
+        if(lobbyCountdownSeconds.Value == 0)
+        {
+            StartGame();
+            StartGameClientRpc();
         }
     }
 }

@@ -1176,6 +1176,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 429112888598792945, guid: ef5e6e7b389e41c49a739316342228b8, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1737133369411236459, guid: ef5e6e7b389e41c49a739316342228b8, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -1439,10 +1443,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5327016388446425755, guid: ff0fe134369b1ed42a0e4b3665b374ff, type: 3}
-      propertyPath: NetworkConfig.PlayerPrefab
-      value: 
-      objectReference: {fileID: 5644749167613886767, guid: 8b8022f03592ae740a2437afb13134f6, type: 3}
     - target: {fileID: 5327016388446425757, guid: ff0fe134369b1ed42a0e4b3665b374ff, type: 3}
       propertyPath: m_Name
       value: NetworkManager
