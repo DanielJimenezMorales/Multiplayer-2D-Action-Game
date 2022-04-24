@@ -27,7 +27,7 @@ public class PlayerLobbyUIController : MonoBehaviour
     {
         playerLobbyContainers = new PlayerLobbyContainer[lobbyCapacity];
 
-        //Instantiate the maximum possible rows and switch off the visibility.
+        // Instantiate the maximum possible number of rows and switch off visibility.
         for (int i = 0; i < lobbyCapacity; i++)
         {
             GameObject playerRow = Instantiate(playerLobbyContainerPrefab, this.transform);
@@ -41,7 +41,7 @@ public class PlayerLobbyUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// This method is to reset the lobby. With this if we exit and enter again we will clean the previous lobby players list.
+    /// This method resets the lobby. If we exit and enter again the previous lobby players list will have been cleared.
     /// </summary>
     private void ResetPlayers()
     {
@@ -64,7 +64,7 @@ public class PlayerLobbyUIController : MonoBehaviour
 
         for (int i = 0; i < playerLobbyContainers.Length; i++)
         {
-            //If the new players list has this index activate the i row with the i player data.
+            // If the new players list has this index activate the i row with the i player data.
             if(i < playersInLobby.Count)
             {
                 ActivateLobbyRow(playerLobbyContainers[i], playersInLobby[i]);
@@ -77,7 +77,7 @@ public class PlayerLobbyUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// Activates a certain lobby row to display the player data.
+    /// Activates a certain lobby row to display a player's data.
     /// </summary>
     /// <param name="container"></param>
     /// <param name="data"></param>
