@@ -26,16 +26,12 @@ public class Player : NetworkBehaviour
     {
         // https://docs-multiplayer.unity3d.com/netcode/current/api/Unity.Netcode.NetworkVariable-1.OnValueChangedDelegate
         State.OnValueChanged += OnPlayerStateValueChanged;
-
-        //SpawnSystem.OnPlayerSpawned.AddListener(ConfigurePlayer);
     }
 
     private void OnDisable()
     {
         // https://docs-multiplayer.unity3d.com/netcode/current/api/Unity.Netcode.NetworkVariable-1.OnValueChangedDelegate
         State.OnValueChanged -= OnPlayerStateValueChanged;
-
-        //SpawnSystem.OnPlayerSpawned.RemoveListener(ConfigurePlayer);
     }
 
     #endregion
