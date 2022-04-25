@@ -15,10 +15,11 @@ public class Player : NetworkBehaviour
 
     #region Unity Event Functions
 
-    private void Awake()
+    public override void OnNetworkSpawn()
     {
-        NetworkManager.OnClientConnectedCallback += ConfigurePlayer;
+        base.OnNetworkSpawn();
 
+        ConfigurePlayer(OwnerClientId);
         State = new NetworkVariable<PlayerState>();
     }
 
@@ -60,6 +61,7 @@ public class Player : NetworkBehaviour
 
         virtualCam.LookAt = transform;
         virtualCam.Follow = transform;
+        Debug.Log("Me llamo");
     }
 
     void ConfigureControls()
