@@ -122,6 +122,19 @@ public class Lobby : NetworkBehaviour
     {
         // Activate InGameUI
         uiManager.ActivateInGameHUD();
+
+        //Spawn Players
+        if(IsServer)
+        {
+            ulong[] clientsId = new ulong[playersInLobby.Count];
+
+            for (int i = 0; i < clientsId.Length; i++)
+            {
+                clientsId[i] = playersInLobby[i].playerId;
+            }
+
+            SpawnSystem.Instance.SpawnPlayersAtRandomSpawnPoint(clientsId);
+        }
     }
 
     public override void OnNetworkDespawn()
@@ -241,7 +254,7 @@ public class Lobby : NetworkBehaviour
             //Show info text and hide countdown
             if(lobbyCountdown.gameObject.activeInHierarchy)
             {
-                Debug.Log("Start lobby countdown");
+                Debug.Log("Stop lobby countdown");
                 StopLobbyCountdown();
             }
 

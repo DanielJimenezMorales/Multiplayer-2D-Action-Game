@@ -9,31 +9,45 @@ using Unity.Netcode;
 /// </summary>
 public class SpawnSystem : Singleton<SpawnSystem>
 {
-    [SerializeField] 
+    [SerializeField]
     private GameObject playerPrefab = null;
 
     private static List<Transform> spawns = new List<Transform>();
-
-    private void Start()
-    {
-        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
-    }
 
     public void AddSpawnPoint(Transform transform) => spawns.Add(transform);
 
     public void RemoveSpawnPoint(Transform transform) => spawns.Remove(transform);
 
     /// <summary>
-    /// Whenever a client is connected, the server must spawn a Player prefab as a player object
+    /// Spawns one player per clientId at a random sapwn point
     /// </summary>
-    /// <param name="clientId">Id of the player whose prefab must be spawned</param>
-    private void OnClientConnected(ulong clientId)
+    /// <param name="clientsId"></param>
+    public void SpawnPlayersAtRandomSpawnPoint(ulong[] clientsId)
     {
-        if (NetworkManager.Singleton.IsServer)
+        for (int i = 0; i < clientsId.Length; i++)
         {
-            int index = Random.Range(0, spawns.Count); // pick a random spawn within the list
-            var player = Instantiate(playerPrefab, spawns[index].position, Quaternion.identity);
-            player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+            int spawnPointIndex = GetRandomSpawnPoint();
+            SpawnPlayer(clientsId[i], spawns[spawnPointIndex].position);
         }
+    }
+
+    /// <summary>
+    /// Spawns a player owned by clientId at position
+    /// </summary>
+    /// <param name="clientId">The client who owns the player</param>
+    /// <param name="position">The spawning position</param>
+    private void SpawnPlayer(ulong clientId, Vector3 position)
+    {
+        var player = Instantiate(playerPrefab, position, Quaternion.identity);
+        player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+    }
+
+    /// <summary>
+    /// Pick a random spawn within the list
+    /// </summary>
+    /// <returns>The spawn point index</returns>
+    private int GetRandomSpawnPoint()
+    {
+        return Random.Range(0, spawns.Count);
     }
 }
