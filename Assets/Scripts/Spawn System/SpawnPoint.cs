@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class SpawnPoint : MonoBehaviour
 {
-    private void Awake() => SpawnSystem.AddSpawnPoint(transform);
+    private void Awake() => SpawnSystem.Instance.AddSpawnPoint(transform);
 
-    private void OnDestroy() => SpawnSystem.RemoveSpawnPoint(transform);
+    private void OnDestroy() => SpawnSystem.Instance.RemoveSpawnPoint(transform);
 
     private void OnDrawGizmos()
     {

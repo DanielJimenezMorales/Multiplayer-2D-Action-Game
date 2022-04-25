@@ -14,9 +14,9 @@ public class SpawnSystem : Singleton<SpawnSystem>
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
     }
 
-    public static void AddSpawnPoint(Transform transform) => spawns.Add(transform);
+    public void AddSpawnPoint(Transform transform) => spawns.Add(transform);
 
-    public static void RemoveSpawnPoint(Transform transform) => spawns.Remove(transform);
+    public void RemoveSpawnPoint(Transform transform) => spawns.Remove(transform);
 
     private void OnClientConnected(ulong clientId)
     {
