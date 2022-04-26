@@ -7,12 +7,26 @@ using Unity.Netcode;
 /// Contains a list of transforms corresponding to the different spawn points
 /// located in the scene.
 /// </summary>
-public class SpawnSystem : Singleton<SpawnSystem>
+public class SpawnSystem : MonoBehaviour
 {
+    public static SpawnSystem Instance;
+
     [SerializeField]
     private GameObject playerPrefab = null;
 
-    private static List<Transform> spawns = new List<Transform>();
+    private List<Transform> spawns = new List<Transform>();
+
+    private void Awake()
+    {
+        if (Instance != null)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
 
     public void AddSpawnPoint(Transform transform) => spawns.Add(transform);
 

@@ -152,6 +152,12 @@ public class Lobby : NetworkBehaviour
             NetworkManager.Singleton.OnClientConnectedCallback += AddPlayerToLobby;
             NetworkManager.Singleton.OnClientDisconnectCallback += RemovePlayerFromLobby;
         }
+
+        // If you are the host, add yourself as a player to the lobby
+        if (IsHost)
+        {
+            AddPlayerToLobby(OwnerClientId);
+        }
     }
 
     private void Dispose()
@@ -288,7 +294,10 @@ public class Lobby : NetworkBehaviour
 
         if(lobbyCountdownSeconds.Value == 0)
         {
-            StartGame();
+            if (!IsHost)
+            {
+                StartGame();
+            }
             StartGameClientRpc();
         }
     }

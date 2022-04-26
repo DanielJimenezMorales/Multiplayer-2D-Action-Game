@@ -6,8 +6,8 @@ using UnityEngine;
 public class SpawnPoint : MonoBehaviour
 {
 
-    // At Awake(), add the spawn point to the SpawnSystem singleton instance list
-    private void Awake() => SpawnSystem.Instance.AddSpawnPoint(transform);
+    // At Start(), add the spawn point to the SpawnSystem singleton instance list
+    private void Start() => SpawnSystem.Instance.AddSpawnPoint(transform);
 
     private void OnDestroy() => SpawnSystem.Instance.RemoveSpawnPoint(transform);
 
