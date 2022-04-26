@@ -24,6 +24,9 @@ public class Lobby : NetworkBehaviour
     private PlayerLobbyUIController playerLobbyUIController;
     private LobbyCountdown lobbyCountdown;
     private LobbyInfoText lobbyInfoText;
+
+    //GameManager
+    private GameManager gameManager;
     #endregion
 
     #region Unity Event Functions
@@ -53,9 +56,13 @@ public class Lobby : NetworkBehaviour
 
         // Init UIManager
         uiManager = FindObjectOfType<UIManager>();
-        Assert.IsNotNull(lobbyInfoText, "[Lobby at Init]: The UIManager is null");
+        Assert.IsNotNull(uiManager, "[Lobby at Init]: The UIManager is null");
 
-        if(IsClient)
+        //Init GameManager
+        gameManager = FindObjectOfType<GameManager>();
+        Assert.IsNotNull(gameManager, "[Lobby at Init]: The GameManager is null");
+
+        if (IsClient)
         {
             ClientUpdateLobbyCountdown(lobbyCountdownSeconds.Value);
         }
@@ -135,6 +142,9 @@ public class Lobby : NetworkBehaviour
 
             SpawnSystem.Instance.SpawnPlayersAtRandomSpawnPoint(clientsId);
         }
+
+        //Start Game in Game Manager
+        gameManager.StartGame();
     }
 
     public override void OnNetworkDespawn()

@@ -1844,6 +1844,7 @@ GameObject:
   - component: {fileID: 5577043241611852398}
   - component: {fileID: 4479229511589621767}
   - component: {fileID: 2423249877186414012}
+  - component: {fileID: 2061990663790331819}
   m_Layer: 5
   m_Name: MatchCountdown
   m_TagString: Untagged
@@ -1912,6 +1913,18 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 2:30
+--- !u!114 &2061990663790331819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6922014706807719076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e97f20039966624087a2b238b981ad8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7101725182811796362
 GameObject:
   m_ObjectHideFlags: 0
