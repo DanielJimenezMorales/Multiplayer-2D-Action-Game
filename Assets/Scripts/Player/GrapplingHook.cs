@@ -93,6 +93,7 @@ public class GrapplingHook : NetworkBehaviour
         }
         else if (player.State.Value == PlayerState.Grounded)
         {
+            //Debug.Log("Player is grounded: grappling hook removed");
             RemoveRopeClientRpc();
             rope.enabled = false;
             ropeRenderer.enabled = false;
@@ -103,6 +104,7 @@ public class GrapplingHook : NetworkBehaviour
     [ServerRpc]
     void JumpPerformedServerRpc()
     {
+        //Debug.Log("Player has jumped: grappling hook removed");
         RemoveRopeClientRpc();
         rope.enabled = false;
         ropeRenderer.enabled = false;
@@ -113,9 +115,11 @@ public class GrapplingHook : NetworkBehaviour
     void LaunchHookServerRpc(Vector2 input)
     {
         var hit = Physics2D.Raycast(playerTransform.position, input - (Vector2)playerTransform.position, Mathf.Infinity, layer);
+        Debug.Log("Grappling has been launched");
 
         if (hit.collider)
         {
+            Debug.Log("Grappling hook has collided with ceiling");
             var anchor = hit.centroid;
             rope.connectedAnchor = anchor;
             ropeRenderer.SetPosition(1, anchor);

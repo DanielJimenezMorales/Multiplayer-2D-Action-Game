@@ -21,17 +21,12 @@ public class Player : NetworkBehaviour
 
         ConfigurePlayer(OwnerClientId);
         State = new NetworkVariable<PlayerState>();
-    }
 
-    private void OnEnable()
-    {
-        // https://docs-multiplayer.unity3d.com/netcode/current/api/Unity.Netcode.NetworkVariable-1.OnValueChangedDelegate
         State.OnValueChanged += OnPlayerStateValueChanged;
     }
 
-    private void OnDisable()
+    public override void OnNetworkDespawn()
     {
-        // https://docs-multiplayer.unity3d.com/netcode/current/api/Unity.Netcode.NetworkVariable-1.OnValueChangedDelegate
         State.OnValueChanged -= OnPlayerStateValueChanged;
     }
 
@@ -61,7 +56,6 @@ public class Player : NetworkBehaviour
 
         virtualCam.LookAt = transform;
         virtualCam.Follow = transform;
-        Debug.Log("Me llamo");
     }
 
     void ConfigureControls()
@@ -80,6 +74,7 @@ public class Player : NetworkBehaviour
     public void UpdatePlayerStateServerRpc(PlayerState state)
     {
         State.Value = state;
+        Debug.Log("Player state has changed to " + state);
     }
 
     #endregion
@@ -92,6 +87,7 @@ public class Player : NetworkBehaviour
     void OnPlayerStateValueChanged(PlayerState previous, PlayerState current)
     {
         State.Value = current;
+        Debug.Log("Player state: " + previous + " -> " + current);
     }
 
     #endregion
