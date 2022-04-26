@@ -143,7 +143,8 @@ public class UIManager : MonoBehaviour
         var ip = inputFieldIP.text;
         if (!string.IsNullOrEmpty(ip))
         {
-            transport.ConnectionData.Address = ip;
+            //transport.ConnectionData.Address = ip;
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(ip, 7777);
         }
         NetworkManager.Singleton.StartClient();
         
