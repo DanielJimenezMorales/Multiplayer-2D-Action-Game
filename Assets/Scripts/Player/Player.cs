@@ -74,7 +74,6 @@ public class Player : NetworkBehaviour
     public void UpdatePlayerStateServerRpc(PlayerState state)
     {
         State.Value = state;
-        Debug.Log("Player state has changed to " + state);
     }
 
     #endregion
@@ -87,7 +86,7 @@ public class Player : NetworkBehaviour
     void OnPlayerStateValueChanged(PlayerState previous, PlayerState current)
     {
         State.Value = current;
-        Debug.Log("Player state: " + previous + " -> " + current);
+        //Debug.Log("Player state: " + previous + " -> " + current);
     }
 
     #endregion
