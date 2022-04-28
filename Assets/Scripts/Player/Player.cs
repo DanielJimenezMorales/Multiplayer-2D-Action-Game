@@ -8,7 +8,6 @@ public class Player : NetworkBehaviour
 {
     #region Variables
 
-    // https://docs-multiplayer.unity3d.com/netcode/current/basics/networkvariable
     public NetworkVariable<PlayerState> State;
 
     #endregion
@@ -69,7 +68,6 @@ public class Player : NetworkBehaviour
 
     #region ServerRPC
 
-    // https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/message-system/serverrpc
     [ServerRpc]
     public void UpdatePlayerStateServerRpc(PlayerState state)
     {
@@ -82,7 +80,6 @@ public class Player : NetworkBehaviour
 
     #region Netcode Related Methods
 
-    // https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/message-system/serverrpc
     void OnPlayerStateValueChanged(PlayerState previous, PlayerState current)
     {
         State.Value = current;

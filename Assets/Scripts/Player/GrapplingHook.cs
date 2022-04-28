@@ -1,18 +1,19 @@
 using UnityEngine;
 using Unity.Netcode;
 
+
+/// <summary>
+/// This class represents the grappling hook equipment in the game
+/// </summary>
 public class GrapplingHook : NetworkBehaviour
 {
     #region Variables
 
     InputHandler handler;
-    // https://docs.unity3d.com/2020.3/Documentation/ScriptReference/DistanceJoint2D.html
     DistanceJoint2D rope;
-    // // https://docs.unity3d.com/2020.3/Documentation/ScriptReference/LineRenderer.html
     LineRenderer ropeRenderer;
     Transform playerTransform;
     [SerializeField] Material material;
-    // https://docs.unity3d.com/2020.3/Documentation/ScriptReference/LayerMask.html
     LayerMask layer;
     Player player;
 
@@ -21,11 +22,16 @@ public class GrapplingHook : NetworkBehaviour
 
     Rigidbody2D rb;
 
-    // https://docs-multiplayer.unity3d.com/netcode/current/basics/networkvariable
+    #endregion
+
+    #region Network Variables
+
     NetworkVariable<bool> ropeVisibility;
-    NetworkVariable<int> ropePositionIndex;
-    NetworkVariable<Vector2> ropePosition;
-    NetworkVariable<bool> ropeEnabled;
+    NetworkVariable<int> ropePositionIndex; // indicates whether we are setting the
+                                            // position of the origin of the rope (0) or the end (1)
+    NetworkVariable<Vector2> ropePosition;  // stores the position of either the origin or the end
+                                            // of the rope, which depends on the ropePositionIndex value
+    NetworkVariable<bool> ropeEnabled;      // true if the DistanceJoint2D rope is enabled
     NetworkVariable<float> ropeDistance;
     NetworkVariable<Vector2> connectedAnchor;
 
@@ -38,7 +44,7 @@ public class GrapplingHook : NetworkBehaviour
         handler = GetComponent<InputHandler>();
         player = GetComponent<Player>();
 
-        //Configure Rope Renderer
+        //Configure RopeRenderer (LineRenderer)
         ropeRenderer = gameObject.AddComponent<LineRenderer>();
         ropeRenderer.startWidth = .05f;
         ropeRenderer.endWidth = .05f;
@@ -46,7 +52,7 @@ public class GrapplingHook : NetworkBehaviour
         ropeRenderer.sortingOrder = 3;
         ropeRenderer.enabled = false;
 
-        // Configure Rope
+        // Configure Rope (DistanceJoint2D)
         rope = gameObject.AddComponent<DistanceJoint2D>();
         rope.enableCollision = true;
         rope.enabled = false;
@@ -104,31 +110,32 @@ public class GrapplingHook : NetworkBehaviour
 
     #region ServerRPC
 
-    // https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/message-system/serverrpc
     [ServerRpc]
     void UpdateHookServerRpc(Vector2 input)
     {
         if (player.State.Value == PlayerState.Hooked)
         {
-            ClimbRopeServerRpc(input.y);
-            SetRopePositionServerRpc(0, playerTransform.position);
+            // Allow player to climb the rope
+            ClimbRope(input.y);
+            // Update origin position of the rope to match the player position
+            SetRopePosition(0, playerTransform.position);
         }
         else if (player.State.Value == PlayerState.Grounded)
         {
-            ChangeRopeStateServerRpc(false);
-            ChangeRopeVisibilityServerRpc(false);
+            // Disable rope
+            ChangeRopeState(false);
+            ChangeRopeVisibility(false);
         }
     }
 
-    // https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/message-system/serverrpc
     [ServerRpc]
     void JumpPerformedServerRpc()
     {
-        ChangeRopeStateServerRpc(false);
-        ChangeRopeVisibilityServerRpc(false);
+        // Disable rope
+        ChangeRopeState(false);
+        ChangeRopeVisibility(false);
     }
 
-    // https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/message-system/serverrpc
     [ServerRpc]
     void LaunchHookServerRpc(Vector2 input)
     {
@@ -136,30 +143,32 @@ public class GrapplingHook : NetworkBehaviour
 
         if (hit.collider)
         {
+            // Connect rope to anchor
             var anchor = hit.centroid;
-            ConnectAnchorServerRpc(anchor);
-            SetRopePositionServerRpc(1, anchor);
-            //UpdateRopeClientRpc(anchor);
-            ChangeRopeStateServerRpc(true);
-            ChangeRopeVisibilityServerRpc(true);
+            ConnectAnchor(anchor);
+            SetRopePosition(1, anchor);
+            SetConnectedAnchorClientRpc(anchor); // this method makes sure that the client updates its anchor point 
+            ChangeRopeState(true);
+            ChangeRopeVisibility(true);
             player.State.Value = PlayerState.Hooked;
         }
     }
 
-    // https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/message-system/serverrpc
     [ServerRpc]
     void SwingRopeServerRpc(Vector2 input)
     {
         if (player.State.Value == PlayerState.Hooked)
         {
-            // Player 2 hook direction
+            // Compute player to hook direction
             var direction = (connectedAnchor.Value - (Vector2)playerTransform.position).normalized;
 
-            // Perpendicular direction
+            // Compute the perpendicular direction
             var forceDirection = new Vector2(input.x * direction.y, direction.x);
 
+            // Compute the force
             var force = forceDirection * swingForce;
 
+            // Add swing force to player rigidbody
             rb.AddForce(force, ForceMode2D.Force);
         }
     }
@@ -168,45 +177,11 @@ public class GrapplingHook : NetworkBehaviour
 
     #region ClientRPC
 
-    /*
-    // https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/message-system/clientrpc
     [ClientRpc]
-    void UpdateAnchorClientRpc(Vector2 anchor)
-    {
-        rope.connectedAnchor = anchor;
-        ShowRopeClientRpc();
-        ropeRenderer.SetPosition(1, anchor);
-    }
-    */
-
-    /*
-    // https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/message-system/clientrpc
-    [ClientRpc]
-    void UpdateRopeClientRpc(Vector2 anchor)
+    void SetConnectedAnchorClientRpc(Vector2 anchor)
     {
         ropeRenderer.SetPosition(1, anchor);
     }
-    */
-
-    /*
-    // https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/message-system/clientrpc
-    [ClientRpc]
-    void ShowRopeClientRpc()
-    {
-        rope.enabled = true;
-        ropeRenderer.enabled = true;
-    }
-    */
-
-    /*
-    // https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/message-system/clientrpc
-    [ClientRpc]
-    void RemoveRopeClientRpc()
-    {
-        rope.enabled = false;
-        ropeRenderer.enabled = false;
-    }
-    */
 
     #endregion
 
@@ -214,8 +189,7 @@ public class GrapplingHook : NetworkBehaviour
 
     #region Methods
 
-    [ServerRpc]
-    public void ClimbRopeServerRpc(float input)
+    void ClimbRope(float input)
     {
         ropeDistance.Value = (input) * climbSpeed * Time.deltaTime;
     }
@@ -225,8 +199,7 @@ public class GrapplingHook : NetworkBehaviour
         rope.distance -= current;
     }
 
-    [ServerRpc]
-    public void ConnectAnchorServerRpc(Vector2 anchor)
+    void ConnectAnchor(Vector2 anchor)
     {
         connectedAnchor.Value = anchor;
     }
@@ -236,8 +209,7 @@ public class GrapplingHook : NetworkBehaviour
         rope.connectedAnchor = current;
     }
 
-    [ServerRpc]
-    public void ChangeRopeStateServerRpc(bool state)
+    public void ChangeRopeState(bool state)
     {
         ropeEnabled.Value = state;
     }
@@ -247,8 +219,7 @@ public class GrapplingHook : NetworkBehaviour
         rope.enabled = current;
     }
 
-    [ServerRpc]
-    public void ChangeRopeVisibilityServerRpc(bool state)
+    void ChangeRopeVisibility(bool state)
     {
         ropeVisibility.Value = state;
     }
@@ -258,8 +229,7 @@ public class GrapplingHook : NetworkBehaviour
         ropeRenderer.enabled = current;
     }
 
-    [ServerRpc]
-    public void SetRopePositionServerRpc(int index, Vector2 position)
+    void SetRopePosition(int index, Vector2 position)
     {
         ropePositionIndex.Value = index;
         ropePosition.Value = position;
