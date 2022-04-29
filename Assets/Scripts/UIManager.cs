@@ -10,7 +10,10 @@ public class UIManager : MonoBehaviour
 
     #region Variables
 
+    [SerializeField] NetworkManager networkManager;
     UnityTransport transport;
+
+    readonly ushort port = 7777;
 
     [SerializeField] Sprite[] hearts = new Sprite[3];
 
@@ -36,13 +39,11 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
-        //transport = NetworkManager.Singleton.GetComponent<UnityTransport>(); Puesto en el Start para que funcione
+        transport = (UnityTransport)networkManager.NetworkConfig.NetworkTransport;
     }
 
     private void Start()
     {
-        transport = NetworkManager.Singleton.gameObject.GetComponent<UnityTransport>();
-
         buttonHost.onClick.AddListener(() => StartHost());
         buttonClient.onClick.AddListener(() => StartClient());
         buttonServer.onClick.AddListener(() => StartServer());
@@ -56,7 +57,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void OnServerReady()
     {
-        if(NetworkManager.Singleton.IsServer)
+        if (NetworkManager.Singleton.IsServer)
         {
             // The server spawns the lobby
             GameObject lobbyGameObject = Instantiate(lobbyPrefab);
@@ -143,11 +144,10 @@ public class UIManager : MonoBehaviour
         var ip = inputFieldIP.text;
         if (!string.IsNullOrEmpty(ip))
         {
-            //transport.ConnectionData.Address = ip;
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(ip, 7777);
+            transport.SetConnectionData(ip, port);
         }
         NetworkManager.Singleton.StartClient();
-        
+
         ActivateLobby();
     }
 
