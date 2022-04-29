@@ -50,7 +50,6 @@ public class Player : NetworkBehaviour
 
     void ConfigureCamera()
     {
-        // https://docs.unity3d.com/Packages/com.unity.cinemachine@2.6/manual/CinemachineBrainProperties.html
         var virtualCam = Camera.main.GetComponent<CinemachineBrain>().ActiveVirtualCamera;
 
         virtualCam.LookAt = transform;

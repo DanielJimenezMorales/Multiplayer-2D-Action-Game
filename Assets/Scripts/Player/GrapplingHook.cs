@@ -26,12 +26,7 @@ public class GrapplingHook : NetworkBehaviour
 
     #region Network Variables
 
-    NetworkVariable<bool> ropeVisibility;
-    NetworkVariable<int> ropePositionIndex; // indicates whether we are setting the
-                                            // position of the origin of the rope (0) or the end (1)
-    NetworkVariable<Vector2> ropePosition;  // stores the position of either the origin or the end
-                                            // of the rope, which depends on the ropePositionIndex value
-    NetworkVariable<bool> ropeEnabled;      // true if the DistanceJoint2D rope is enabled
+    NetworkVariable<bool> ropeEnabled;
     NetworkVariable<float> ropeDistance;
     NetworkVariable<Vector2> connectedAnchor;
 
@@ -62,9 +57,6 @@ public class GrapplingHook : NetworkBehaviour
 
         rb = GetComponent<Rigidbody2D>();
 
-        ropeVisibility = new NetworkVariable<bool>();
-        ropePosition = new NetworkVariable<Vector2>();
-        ropePositionIndex = new NetworkVariable<int>();
         ropeEnabled = new NetworkVariable<bool>();
         ropeDistance = new NetworkVariable<float>();
         connectedAnchor = new NetworkVariable<Vector2>();
@@ -80,8 +72,6 @@ public class GrapplingHook : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        ropeVisibility.OnValueChanged += OnRopeVisibilityValueChanged;
-        ropePosition.OnValueChanged += OnRopePositionValueChanged;
         ropeEnabled.OnValueChanged += OnRopeStateValueChanged;
         ropeDistance.OnValueChanged += OnRopeDistanceValueChanged;
         connectedAnchor.OnValueChanged += OnConnectedAnchorValueChanged;
@@ -97,11 +87,17 @@ public class GrapplingHook : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
-        ropeVisibility.OnValueChanged -= OnRopeVisibilityValueChanged;
-        ropePosition.OnValueChanged -= OnRopePositionValueChanged;
         ropeEnabled.OnValueChanged -= OnRopeStateValueChanged;
         ropeDistance.OnValueChanged -= OnRopeDistanceValueChanged;
         connectedAnchor.OnValueChanged -= OnConnectedAnchorValueChanged;
+    }
+
+    private void Update()
+    {
+        if (ropeEnabled.Value)
+        {
+            ropeRenderer.SetPosition(0, playerTransform.position);
+        }
     }
 
     #endregion
@@ -117,14 +113,11 @@ public class GrapplingHook : NetworkBehaviour
         {
             // Allow player to climb the rope
             ClimbRope(input.y);
-            // Update origin position of the rope to match the player position
-            SetRopePosition(0, playerTransform.position);
         }
         else if (player.State.Value == PlayerState.Grounded)
         {
             // Disable rope
             ChangeRopeState(false);
-            ChangeRopeVisibility(false);
         }
     }
 
@@ -133,7 +126,6 @@ public class GrapplingHook : NetworkBehaviour
     {
         // Disable rope
         ChangeRopeState(false);
-        ChangeRopeVisibility(false);
     }
 
     [ServerRpc]
@@ -146,10 +138,8 @@ public class GrapplingHook : NetworkBehaviour
             // Connect rope to anchor
             var anchor = hit.centroid;
             ConnectAnchor(anchor);
-            SetRopePosition(1, anchor);
-            SetConnectedAnchorClientRpc(anchor); // this method makes sure that the client updates its anchor point 
+            //SetRopePosition(anchor);
             ChangeRopeState(true);
-            ChangeRopeVisibility(true);
             player.State.Value = PlayerState.Hooked;
         }
     }
@@ -171,16 +161,6 @@ public class GrapplingHook : NetworkBehaviour
             // Add swing force to player rigidbody
             rb.AddForce(force, ForceMode2D.Force);
         }
-    }
-
-    #endregion
-
-    #region ClientRPC
-
-    [ClientRpc]
-    void SetConnectedAnchorClientRpc(Vector2 anchor)
-    {
-        ropeRenderer.SetPosition(1, anchor);
     }
 
     #endregion
@@ -207,6 +187,7 @@ public class GrapplingHook : NetworkBehaviour
     void OnConnectedAnchorValueChanged(Vector2 previous, Vector2 current)
     {
         rope.connectedAnchor = current;
+        ropeRenderer.SetPosition(1, current);
     }
 
     public void ChangeRopeState(bool state)
@@ -217,28 +198,9 @@ public class GrapplingHook : NetworkBehaviour
     void OnRopeStateValueChanged(bool previous, bool current)
     {
         rope.enabled = current;
-    }
-
-    void ChangeRopeVisibility(bool state)
-    {
-        ropeVisibility.Value = state;
-    }
-
-    void OnRopeVisibilityValueChanged(bool previous, bool current)
-    {
         ropeRenderer.enabled = current;
-    }
-
-    void SetRopePosition(int index, Vector2 position)
-    {
-        ropePositionIndex.Value = index;
-        ropePosition.Value = position;
-    }
-
-    void OnRopePositionValueChanged(Vector2 previous, Vector2 current)
-    {
-        ropeRenderer.SetPosition(ropePositionIndex.Value, current);
     }
 
     #endregion
 }
+
