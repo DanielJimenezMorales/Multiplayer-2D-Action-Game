@@ -1201,6 +1201,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1920566842}
     - target: {fileID: 1332957947535845843, guid: 24b3e92d40fdae54088fb6f13ef5342c, type: 3}
+      propertyPath: networkManager
+      value: 
+      objectReference: {fileID: 2064087090}
+    - target: {fileID: 1332957947535845843, guid: 24b3e92d40fdae54088fb6f13ef5342c, type: 3}
       propertyPath: heartsUI.Array.data[0]
       value: 
       objectReference: {fileID: 10355778}
