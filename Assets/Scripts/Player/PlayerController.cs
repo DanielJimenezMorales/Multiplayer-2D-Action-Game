@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Netcode;
+using System;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(CapsuleCollider2D))]
@@ -20,7 +21,6 @@ public class PlayerController : NetworkBehaviour
     LayerMask _layer;
     int _jumpsLeft;
 
-    // https://docs.unity3d.com/2020.3/Documentation/ScriptReference/ContactFilter2D.html
     ContactFilter2D filter;
     InputHandler handler;
     Player player;
@@ -28,9 +28,12 @@ public class PlayerController : NetworkBehaviour
     new CapsuleCollider2D collider;
     Animator anim;
     SpriteRenderer spriteRenderer;
+    WeaponAim weaponAim;
 
-    // https://docs-multiplayer.unity3d.com/netcode/current/basics/networkvariable
     NetworkVariable<bool> FlipSprite;
+
+    [SerializeField]
+    private GameObject bulletPrefab = null;
 
     #endregion
 
@@ -44,6 +47,7 @@ public class PlayerController : NetworkBehaviour
         player = GetComponent<Player>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        weaponAim = GetComponent<WeaponAim>();
 
         FlipSprite = new NetworkVariable<bool>();
     }
@@ -52,6 +56,7 @@ public class PlayerController : NetworkBehaviour
     {
         handler.OnMove.AddListener(UpdatePlayerVisualsServerRpc);
         handler.OnJump.AddListener(PerformJumpServerRpc);
+        handler.OnFire.AddListener(FireBulletServerRpc);
         handler.OnMoveFixedUpdate.AddListener(UpdatePlayerPositionServerRpc);
 
         FlipSprite.OnValueChanged += OnFlipSpriteValueChanged;
@@ -61,6 +66,7 @@ public class PlayerController : NetworkBehaviour
     {
         handler.OnMove.RemoveListener(UpdatePlayerVisualsServerRpc);
         handler.OnJump.RemoveListener(PerformJumpServerRpc);
+        handler.OnFire.RemoveListener(FireBulletServerRpc);
         handler.OnMoveFixedUpdate.RemoveListener(UpdatePlayerPositionServerRpc);
 
         FlipSprite.OnValueChanged -= OnFlipSpriteValueChanged;
@@ -89,7 +95,6 @@ public class PlayerController : NetworkBehaviour
 
     #region ServerRPC
 
-    // https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/message-system/serverrpc
     [ServerRpc]
     void UpdatePlayerVisualsServerRpc(Vector2 input)
     {
@@ -97,7 +102,6 @@ public class PlayerController : NetworkBehaviour
         UpdateSpriteOrientation(input);
     }
 
-    // https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/message-system/serverrpc
     [ServerRpc]
     void UpdateAnimatorStateServerRpc()
     {
@@ -112,7 +116,6 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    // https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/message-system/serverrpc
     [ServerRpc]
     void PerformJumpServerRpc()
     {
@@ -131,7 +134,15 @@ public class PlayerController : NetworkBehaviour
         _jumpsLeft--;
     }
 
-    // https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/message-system/serverrpc
+    [ServerRpc]
+    private void FireBulletServerRpc()
+    {
+        // Spawn a bullet
+        GameObject bullet = Instantiate(bulletPrefab, transform.position, weaponAim.GetWeaponOrientation());
+        bullet.GetComponent<NetworkObject>().Spawn();
+    }
+
+
     [ServerRpc]
     void UpdatePlayerPositionServerRpc(Vector2 input)
     {

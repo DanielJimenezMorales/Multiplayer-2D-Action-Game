@@ -1508,6 +1508,14 @@ PrefabInstance:
       propertyPath: NetworkConfig.PlayerPrefab
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 5327016388446425755, guid: ff0fe134369b1ed42a0e4b3665b374ff, type: 3}
+      propertyPath: NetworkConfig.NetworkPrefabs.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5327016388446425755, guid: ff0fe134369b1ed42a0e4b3665b374ff, type: 3}
+      propertyPath: NetworkConfig.NetworkPrefabs.Array.data[2].Prefab
+      value: 
+      objectReference: {fileID: 6146433538645557641, guid: af2a8a97b36ebe2428a287b6deeefb57, type: 3}
     - target: {fileID: 5327016388446425757, guid: ff0fe134369b1ed42a0e4b3665b374ff, type: 3}
       propertyPath: m_Name
       value: NetworkManager
