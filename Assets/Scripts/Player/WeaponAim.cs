@@ -47,7 +47,7 @@ public class WeaponAim : NetworkBehaviour
         }
 
         SetCrossHairPosition(aimAngle);
-
+    
         UpdateWeaponOrientation();
 
     }
@@ -75,12 +75,7 @@ public class WeaponAim : NetworkBehaviour
         crossHair.transform.position = crossHairPosition;
     }
 
-    public Quaternion GetWeaponOrientation()
-    {
-        Quaternion rotation = Quaternion.AngleAxis(30, Vector3.forward);
-        return rotation;
-    } 
-
+    public Vector2 GetShootDirection() { return crossHair.localPosition; }
 
     #endregion
 

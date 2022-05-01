@@ -34,6 +34,7 @@ public class PlayerController : NetworkBehaviour
 
     [SerializeField]
     private GameObject bulletPrefab = null;
+    private float bulletSpeed = 10f;
 
     #endregion
 
@@ -134,11 +135,20 @@ public class PlayerController : NetworkBehaviour
         _jumpsLeft--;
     }
 
+
+    /// <summary>
+    /// Fire a bullet in the direction of aim
+    /// </summary>
     [ServerRpc]
     private void FireBulletServerRpc()
     {
-        // Spawn a bullet
-        GameObject bullet = Instantiate(bulletPrefab, transform.position, weaponAim.GetWeaponOrientation());
+        // Instantiate a bullet
+        GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+        // Get the direction the player is aiming to
+        Vector2 shootDirection = weaponAim.GetShootDirection();
+        // Change instance's rigidbody velocity
+        bullet.GetComponent<Rigidbody2D>().velocity = shootDirection * bulletSpeed;
+        // Spawn the bullet
         bullet.GetComponent<NetworkObject>().Spawn();
     }
 

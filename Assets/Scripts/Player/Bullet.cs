@@ -6,23 +6,23 @@ using System;
 
 public class Bullet : NetworkBehaviour
 {
-    private float _speed = 3f;
+    Rigidbody2D _rb;
+    NetworkObject _networkObject;
+
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
 
+        _rb = GetComponent<Rigidbody2D>();
+        _networkObject = GetComponent<NetworkObject>();
 
-    }
-
-    private void FixedUpdate()
-    {
-        MoveBulletServerRpc();
     }
 
     [ServerRpc]
-    public void MoveBulletServerRpc()
+    private void DespawnBulletServerRpc()
     {
-        transform.Translate(_speed * transform.right * Time.deltaTime);
+        Debug.Log("Despawn bullet");
+        _networkObject.Despawn();
     }
 }
