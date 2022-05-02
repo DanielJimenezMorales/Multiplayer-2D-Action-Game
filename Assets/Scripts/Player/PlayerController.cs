@@ -1,9 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Unity.Netcode;
-using System;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(CapsuleCollider2D))]
@@ -32,9 +29,13 @@ public class PlayerController : NetworkBehaviour
 
     NetworkVariable<bool> FlipSprite;
 
+    // Firing system variables
     [SerializeField]
     private GameObject bulletPrefab = null;
     private float bulletSpeed = 10f;
+    private const int WEAPON_RELOAD_TIME = 2;
+    private int weaponCooldown = 0;
+    private WeaponCooldownCounter cooldownCounter;
 
     #endregion
 
@@ -49,6 +50,7 @@ public class PlayerController : NetworkBehaviour
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         weaponAim = GetComponent<WeaponAim>();
+        cooldownCounter = GetComponentInChildren<WeaponCooldownCounter>();
 
         FlipSprite = new NetworkVariable<bool>();
     }
@@ -142,16 +144,21 @@ public class PlayerController : NetworkBehaviour
     [ServerRpc]
     private void FireBulletServerRpc()
     {
-        // Instantiate a bullet
-        GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
-        // Get the direction the player is aiming to
-        Vector2 shootDirection = weaponAim.GetShootDirection();
-        // Change instance's rigidbody velocity
-        bullet.GetComponent<Rigidbody2D>().velocity = shootDirection * bulletSpeed;
-        // Spawn the bullet
-        bullet.GetComponent<NetworkObject>().Spawn();
+        if (weaponCooldown <= 0) // only shoot if weapon is charged
+        {
+            // Restart weapon cooldown
+            StartCoroutine(RestartWeaponCooldown());
+            // Instantiate a bullet
+            GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+            // Get the direction the player is aiming to
+            Vector2 shootDirection = weaponAim.GetShootDirection();
+            // Change instance's rigidbody velocity
+            bullet.GetComponent<Rigidbody2D>().velocity = shootDirection * bulletSpeed;
+            // Spawn the bullet
+            bullet.GetComponent<NetworkObject>().Spawn();
+            
+        }
     }
-
 
     [ServerRpc]
     void UpdatePlayerPositionServerRpc(Vector2 input)
@@ -191,6 +198,25 @@ public class PlayerController : NetworkBehaviour
     }
 
     bool IsGrounded => collider.IsTouching(filter);
+
+    #endregion
+
+    #region Coroutines
+
+    /// <summary>
+    /// Resets the weapon cooldown to reload time and progressively depletes it
+    /// </summary>
+    private IEnumerator RestartWeaponCooldown()
+    {
+        weaponCooldown = WEAPON_RELOAD_TIME;
+        cooldownCounter.ResetCooldown(WEAPON_RELOAD_TIME);
+        while (weaponCooldown > 0)
+        {
+            yield return new WaitForSeconds(1f);
+            weaponCooldown--;
+            cooldownCounter.DepleteCooldown();
+        }
+    }
 
     #endregion
 

@@ -4,25 +4,33 @@ using UnityEngine;
 using Unity.Netcode;
 using System;
 
+
+/// <summary>
+/// This class represents a bullet from the player's weapon
+/// </summary>
 public class Bullet : NetworkBehaviour
 {
-    Rigidbody2D _rb;
     NetworkObject _networkObject;
-
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
 
-        _rb = GetComponent<Rigidbody2D>();
         _networkObject = GetComponent<NetworkObject>();
+    }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if(other.gameObject.layer == 6)
+            // Despawn bullet if it collides with an obstacle
+        {
+            DespawnBulletServerRpc();
+        }
     }
 
     [ServerRpc]
     private void DespawnBulletServerRpc()
     {
-        Debug.Log("Despawn bullet");
         _networkObject.Despawn();
     }
 }
