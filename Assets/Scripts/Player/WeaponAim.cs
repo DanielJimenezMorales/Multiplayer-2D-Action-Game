@@ -47,7 +47,7 @@ public class WeaponAim : NetworkBehaviour
         }
 
         SetCrossHairPosition(aimAngle);
-
+    
         UpdateWeaponOrientation();
 
     }
@@ -74,6 +74,8 @@ public class WeaponAim : NetworkBehaviour
         var crossHairPosition = new Vector3(x, y, 0);
         crossHair.transform.position = crossHairPosition;
     }
+
+    public Vector2 GetShootDirection() { return crossHair.localPosition; }
 
     #endregion
 

@@ -1,7 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Unity.Netcode;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -20,7 +18,6 @@ public class PlayerController : NetworkBehaviour
     LayerMask _layer;
     int _jumpsLeft;
 
-    // https://docs.unity3d.com/2020.3/Documentation/ScriptReference/ContactFilter2D.html
     ContactFilter2D filter;
     InputHandler handler;
     Player player;
@@ -28,9 +25,17 @@ public class PlayerController : NetworkBehaviour
     new CapsuleCollider2D collider;
     Animator anim;
     SpriteRenderer spriteRenderer;
+    WeaponAim weaponAim;
 
-    // https://docs-multiplayer.unity3d.com/netcode/current/basics/networkvariable
     NetworkVariable<bool> FlipSprite;
+
+    // Firing system variables
+    [SerializeField]
+    private GameObject bulletPrefab = null;
+    private float bulletSpeed = 10f;
+    private const int WEAPON_RELOAD_TIME = 2;
+    private int weaponCooldown = 0;
+    private WeaponCooldownCounter cooldownCounter;
 
     #endregion
 
@@ -44,6 +49,8 @@ public class PlayerController : NetworkBehaviour
         player = GetComponent<Player>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        weaponAim = GetComponent<WeaponAim>();
+        cooldownCounter = GetComponentInChildren<WeaponCooldownCounter>();
 
         FlipSprite = new NetworkVariable<bool>();
     }
@@ -52,6 +59,7 @@ public class PlayerController : NetworkBehaviour
     {
         handler.OnMove.AddListener(UpdatePlayerVisualsServerRpc);
         handler.OnJump.AddListener(PerformJumpServerRpc);
+        handler.OnFire.AddListener(FireBulletServerRpc);
         handler.OnMoveFixedUpdate.AddListener(UpdatePlayerPositionServerRpc);
 
         FlipSprite.OnValueChanged += OnFlipSpriteValueChanged;
@@ -61,6 +69,7 @@ public class PlayerController : NetworkBehaviour
     {
         handler.OnMove.RemoveListener(UpdatePlayerVisualsServerRpc);
         handler.OnJump.RemoveListener(PerformJumpServerRpc);
+        handler.OnFire.RemoveListener(FireBulletServerRpc);
         handler.OnMoveFixedUpdate.RemoveListener(UpdatePlayerPositionServerRpc);
 
         FlipSprite.OnValueChanged -= OnFlipSpriteValueChanged;
@@ -89,7 +98,6 @@ public class PlayerController : NetworkBehaviour
 
     #region ServerRPC
 
-    // https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/message-system/serverrpc
     [ServerRpc]
     void UpdatePlayerVisualsServerRpc(Vector2 input)
     {
@@ -97,7 +105,6 @@ public class PlayerController : NetworkBehaviour
         UpdateSpriteOrientation(input);
     }
 
-    // https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/message-system/serverrpc
     [ServerRpc]
     void UpdateAnimatorStateServerRpc()
     {
@@ -112,7 +119,6 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    // https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/message-system/serverrpc
     [ServerRpc]
     void PerformJumpServerRpc()
     {
@@ -131,7 +137,29 @@ public class PlayerController : NetworkBehaviour
         _jumpsLeft--;
     }
 
-    // https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/message-system/serverrpc
+
+    /// <summary>
+    /// Fire a bullet in the direction of aim
+    /// </summary>
+    [ServerRpc]
+    private void FireBulletServerRpc()
+    {
+        if (weaponCooldown <= 0) // only shoot if weapon is charged
+        {
+            // Restart weapon cooldown
+            StartCoroutine(RestartWeaponCooldown());
+            // Instantiate a bullet
+            GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+            // Get the direction the player is aiming to
+            Vector2 shootDirection = weaponAim.GetShootDirection();
+            // Change instance's rigidbody velocity
+            bullet.GetComponent<Rigidbody2D>().velocity = shootDirection * bulletSpeed;
+            // Spawn the bullet
+            bullet.GetComponent<NetworkObject>().Spawn();
+            
+        }
+    }
+
     [ServerRpc]
     void UpdatePlayerPositionServerRpc(Vector2 input)
     {
@@ -170,6 +198,25 @@ public class PlayerController : NetworkBehaviour
     }
 
     bool IsGrounded => collider.IsTouching(filter);
+
+    #endregion
+
+    #region Coroutines
+
+    /// <summary>
+    /// Resets the weapon cooldown to reload time and progressively depletes it
+    /// </summary>
+    private IEnumerator RestartWeaponCooldown()
+    {
+        weaponCooldown = WEAPON_RELOAD_TIME;
+        cooldownCounter.ResetCooldown(WEAPON_RELOAD_TIME);
+        while (weaponCooldown > 0)
+        {
+            yield return new WaitForSeconds(1f);
+            weaponCooldown--;
+            cooldownCounter.DepleteCooldown();
+        }
+    }
 
     #endregion
 
