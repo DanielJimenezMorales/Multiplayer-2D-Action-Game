@@ -8,21 +8,19 @@ public class InputHandler : NetworkBehaviour
 
     #region Variables
 
-    // https://docs.unity3d.com/Packages/com.unity.inputsystem@1.3/manual/index.html
     [SerializeField] InputAction _move;
     [SerializeField] InputAction _jump;
     [SerializeField] InputAction _hook;
     [SerializeField] InputAction _fire;
     [SerializeField] InputAction _mousePosition;
 
-    // https://docs.unity3d.com/ScriptReference/Events.UnityEvent.html
     public UnityEvent<Vector2> OnMove;
     public UnityEvent<Vector2> OnMoveFixedUpdate;
     public UnityEvent<Vector2> OnMousePosition;
     public UnityEvent<Vector2> OnHook;
     public UnityEvent<Vector2> OnHookRender;
+    public UnityEvent<Vector2> OnFire;
     public UnityEvent OnJump;
-    public UnityEvent OnFire;
 
     Vector2 CachedMoveInput { get; set; }
 
@@ -75,12 +73,11 @@ public class InputHandler : NetworkBehaviour
             Move(CachedMoveInput);
             MousePosition(mousePosition);
 
-            // https://docs.unity3d.com/2020.3/Documentation/ScriptReference/Camera.ScreenToWorldPoint.html
             var screenPoint = Camera.main.ScreenToWorldPoint(mousePosition);
             if (hookPerformed) { Hook(screenPoint); }
 
             if (jumpPerformed) { Jump(); }
-            if (_fire.WasPerformedThisFrame()) { Fire(); }
+            if (_fire.WasPerformedThisFrame()) { Fire(screenPoint); }
 
             HookRender(CachedMoveInput);
         }
@@ -120,9 +117,9 @@ public class InputHandler : NetworkBehaviour
         OnHookRender?.Invoke(input);
     }
 
-    void Fire()
+    void Fire(Vector2 input)
     {
-        OnFire?.Invoke();
+        OnFire?.Invoke(input);
     }
 
     void MousePosition(Vector2 input)

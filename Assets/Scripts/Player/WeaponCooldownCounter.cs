@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class WeaponCooldownCounter : MonoBehaviour
+public class WeaponCooldownCounter : NetworkBehaviour
 {
     [SerializeField] List<Sprite> numberSprite = new List<Sprite>(2);
     SpriteRenderer spriteRenderer;
