@@ -25,17 +25,17 @@ public class PlayerController : NetworkBehaviour
     new CapsuleCollider2D collider;
     Animator anim;
     SpriteRenderer spriteRenderer;
-    WeaponAim weaponAim;
 
     NetworkVariable<bool> FlipSprite;
 
     // Firing system variables
     [SerializeField]
     private GameObject bulletPrefab = null;
-    private float bulletSpeed = 10f;
+    private float bulletSpeed = 2f;
     private const int WEAPON_RELOAD_TIME = 2;
     private int weaponCooldown = 0;
     private WeaponCooldownCounter cooldownCounter;
+    private bool hasFired = false;
 
     #endregion
 
@@ -49,7 +49,6 @@ public class PlayerController : NetworkBehaviour
         player = GetComponent<Player>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        weaponAim = GetComponent<WeaponAim>();
         cooldownCounter = GetComponentInChildren<WeaponCooldownCounter>();
 
         FlipSprite = new NetworkVariable<bool>();
@@ -90,6 +89,16 @@ public class PlayerController : NetworkBehaviour
         filter.maxNormalAngle = 135;
         filter.useNormalAngle = true;
         filter.layerMask = _layer;
+    }
+
+    void Update()
+    {
+        if (hasFired)
+        {
+            hasFired = false;
+            // Restart weapon cooldown
+            StartCoroutine(RestartWeaponCooldown());
+        }
     }
 
     #endregion
@@ -142,21 +151,20 @@ public class PlayerController : NetworkBehaviour
     /// Fire a bullet in the direction of aim
     /// </summary>
     [ServerRpc]
-    private void FireBulletServerRpc()
+    private void FireBulletServerRpc(Vector2 input)
     {
         if (weaponCooldown <= 0) // only shoot if weapon is charged
         {
-            // Restart weapon cooldown
-            StartCoroutine(RestartWeaponCooldown());
+            hasFired = true;
             // Instantiate a bullet
             GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
-            // Get the direction the player is aiming to
-            Vector2 shootDirection = weaponAim.GetShootDirection();
             // Change instance's rigidbody velocity
-            bullet.GetComponent<Rigidbody2D>().velocity = shootDirection * bulletSpeed;
+            Vector2 direction = (input - (Vector2)transform.position).normalized;
+            bullet.GetComponent<Rigidbody2D>().velocity = direction * bulletSpeed;
             // Spawn the bullet
             bullet.GetComponent<NetworkObject>().Spawn();
-            
+            // Change bullet shooter id
+            bullet.GetComponent<Bullet>().ShooterId.Value = NetworkObjectId;
         }
     }
 
@@ -216,6 +224,7 @@ public class PlayerController : NetworkBehaviour
             weaponCooldown--;
             cooldownCounter.DepleteCooldown();
         }
+        hasFired = false;
     }
 
     #endregion

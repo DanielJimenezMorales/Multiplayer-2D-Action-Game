@@ -1,13 +1,14 @@
 using UnityEngine;
 using Unity.Netcode;
 
-public class WeaponAim : NetworkBehaviour
+public class Weapon : NetworkBehaviour
 {
 
     #region Variables
 
     [SerializeField] Transform crossHair;
     [SerializeField] Transform weapon;
+    WeaponCooldownCounter cooldown;
     SpriteRenderer weaponRenderer;
     InputHandler handler;
 
@@ -37,7 +38,6 @@ public class WeaponAim : NetworkBehaviour
 
     void UpdateCrosshairPosition(Vector2 input)
     {
-        // https://docs.unity3d.com/2020.3/Documentation/ScriptReference/Camera.ScreenToWorldPoint.html
         var worldMousePosition = Camera.main.ScreenToWorldPoint(input);
         var facingDirection = worldMousePosition - transform.position;
         var aimAngle = Mathf.Atan2(facingDirection.y, facingDirection.x);
@@ -49,7 +49,6 @@ public class WeaponAim : NetworkBehaviour
         SetCrossHairPosition(aimAngle);
     
         UpdateWeaponOrientation();
-
     }
 
     void UpdateWeaponOrientation()
@@ -75,7 +74,11 @@ public class WeaponAim : NetworkBehaviour
         crossHair.transform.position = crossHairPosition;
     }
 
-    public Vector2 GetShootDirection() { return crossHair.localPosition; }
+    #endregion
+
+    #region Coroutines
+
+
 
     #endregion
 
