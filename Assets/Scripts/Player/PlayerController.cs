@@ -32,10 +32,7 @@ public class PlayerController : NetworkBehaviour
     [SerializeField]
     private GameObject bulletPrefab = null;
     private float bulletSpeed = 2f;
-    private const int WEAPON_RELOAD_TIME = 2;
-    private int weaponCooldown = 0;
-    private WeaponCooldownCounter cooldownCounter;
-    private bool hasFired = false;
+    private Weapon weapon;
 
     #endregion
 
@@ -49,7 +46,7 @@ public class PlayerController : NetworkBehaviour
         player = GetComponent<Player>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        cooldownCounter = GetComponentInChildren<WeaponCooldownCounter>();
+        weapon = GetComponent<Weapon>();
 
         FlipSprite = new NetworkVariable<bool>();
     }
@@ -89,16 +86,6 @@ public class PlayerController : NetworkBehaviour
         filter.maxNormalAngle = 135;
         filter.useNormalAngle = true;
         filter.layerMask = _layer;
-    }
-
-    void Update()
-    {
-        if (hasFired)
-        {
-            hasFired = false;
-            // Restart weapon cooldown
-            StartCoroutine(RestartWeaponCooldown());
-        }
     }
 
     #endregion
@@ -153,9 +140,9 @@ public class PlayerController : NetworkBehaviour
     [ServerRpc]
     private void FireBulletServerRpc(Vector2 input)
     {
-        if (weaponCooldown <= 0) // only shoot if weapon is charged
+        if (weapon.WeaponCooldown <= 0) // only shoot if weapon is charged
         {
-            hasFired = true;
+            weapon.HasFired = true;
             // Instantiate a bullet
             GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
             // Change instance's rigidbody velocity
@@ -208,25 +195,4 @@ public class PlayerController : NetworkBehaviour
     bool IsGrounded => collider.IsTouching(filter);
 
     #endregion
-
-    #region Coroutines
-
-    /// <summary>
-    /// Resets the weapon cooldown to reload time and progressively depletes it
-    /// </summary>
-    private IEnumerator RestartWeaponCooldown()
-    {
-        weaponCooldown = WEAPON_RELOAD_TIME;
-        cooldownCounter.ResetCooldown(WEAPON_RELOAD_TIME);
-        while (weaponCooldown > 0)
-        {
-            yield return new WaitForSeconds(1f);
-            weaponCooldown--;
-            cooldownCounter.DepleteCooldown();
-        }
-        hasFired = false;
-    }
-
-    #endregion
-
 }

@@ -92,7 +92,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2125255220}
   - component: {fileID: 2125255221}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Weapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -174,8 +174,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7131050122595640553}
   - component: {fileID: 5133334115446761124}
-  - component: {fileID: 2763424334996678127}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WeaponCooldown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -247,21 +246,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &2763424334996678127
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4499136098162514388}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f77ff0af01f75ff4e9e0275c164a76b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  numberSprite:
-  - {fileID: -4255846828030596685, guid: dd5dc921e7c13ed42bebe89c6e9f7ecd, type: 3}
-  - {fileID: 3556915880641124632, guid: dd5dc921e7c13ed42bebe89c6e9f7ecd, type: 3}
 --- !u!1 &5644749167613886767
 GameObject:
   m_ObjectHideFlags: 0
@@ -393,10 +377,10 @@ MonoBehaviour:
   OnHookRender:
     m_PersistentCalls:
       m_Calls: []
-  OnJump:
+  OnFire:
     m_PersistentCalls:
       m_Calls: []
-  OnFire:
+  OnJump:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &5644749167613886764
@@ -439,6 +423,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   crossHair: {fileID: 693612501}
   weapon: {fileID: 2125255220}
+  cooldownCounter: {fileID: 7131050122595640553}
+  numberSprite:
+  - {fileID: -8449205524330658404, guid: dd5dc921e7c13ed42bebe89c6e9f7ecd, type: 3}
+  - {fileID: 4244125561271486210, guid: dd5dc921e7c13ed42bebe89c6e9f7ecd, type: 3}
 --- !u!212 &5644749167613886766
 SpriteRenderer:
   m_ObjectHideFlags: 0
