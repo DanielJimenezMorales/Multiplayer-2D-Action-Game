@@ -116,35 +116,37 @@ public class Lobby : NetworkBehaviour
 
 
     #endregion
+
     /// <summary>
     /// This method will start the lobby whenever the start condition turns to valid. In this case, when the lobby countdown reaches 0.
     /// </summary>
     [ClientRpc]
     private void StartGameClientRpc()
     {
-        StartGame();
+        uiManager.ActivateInGameHUD();
     }
 
-    private void StartGame()
+    private void StartGameServer()
     {
+        if (!IsServer) return;
+
         // Activate InGameUI
         uiManager.ActivateInGameHUD();
 
         //Spawn Players
-        if(IsServer)
+        ulong[] clientsId = new ulong[playersInLobby.Count];
+
+        for (int i = 0; i < clientsId.Length; i++)
         {
-            ulong[] clientsId = new ulong[playersInLobby.Count];
-
-            for (int i = 0; i < clientsId.Length; i++)
-            {
-                clientsId[i] = playersInLobby[i].playerId;
-            }
-
-            SpawnSystem.Instance.SpawnPlayersAtRandomSpawnPoint(clientsId);
+            clientsId[i] = playersInLobby[i].playerId;
         }
 
+        SpawnSystem.Instance.SpawnPlayersAtRandomSpawnPoint(clientsId);
+
         //Start Game in Game Manager
-        gameManager.StartGame();
+        gameManager.StartGame_Server();
+
+        StartGameClientRpc();
     }
 
     public override void OnNetworkDespawn()
@@ -152,6 +154,7 @@ public class Lobby : NetworkBehaviour
         base.OnNetworkDespawn();
         Dispose();
     }
+
     private void Init()
     {
         // Init the Lobby (only server)
@@ -304,11 +307,7 @@ public class Lobby : NetworkBehaviour
 
         if(lobbyCountdownSeconds.Value == 0)
         {
-            if (!IsHost)
-            {
-                StartGame();
-            }
-            StartGameClientRpc();
+            StartGameServer();
         }
     }
 }
