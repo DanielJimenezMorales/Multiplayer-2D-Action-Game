@@ -31,6 +31,9 @@ public class UIManager : MonoBehaviour
     [Header("In-Game HUD")]
     [SerializeField] private GameObject inGameHUD;
     [SerializeField] RawImage[] heartsUI = new RawImage[3];
+
+    [Header("End match")]
+    [SerializeField] private GameObject endMatch;
     #endregion
 
     #region Unity Event Functions
@@ -55,6 +58,7 @@ public class UIManager : MonoBehaviour
         mainMenu.SetActive(true);
         inGameHUD.SetActive(false);
         lobby.SetActive(false);
+        endMatch.SetActive(false);
     }
 
     public void ActivateInGameHUD()
@@ -62,6 +66,7 @@ public class UIManager : MonoBehaviour
         mainMenu.SetActive(false);
         inGameHUD.SetActive(true);
         lobby.SetActive(false);
+        endMatch.SetActive(false);
 
         // for test purposes
         UpdateLifeUI(Random.Range(1, 6));
@@ -70,6 +75,15 @@ public class UIManager : MonoBehaviour
     private void ActivateLobby()
     {
         lobby.SetActive(true);
+        mainMenu.SetActive(false);
+        inGameHUD.SetActive(false);
+        endMatch.SetActive(false);
+    }
+
+    public void ActivateEndMatch()
+    {
+        endMatch.SetActive(true);
+        lobby.SetActive(false);
         mainMenu.SetActive(false);
         inGameHUD.SetActive(false);
     }

@@ -14,6 +14,7 @@ public class GameManager : NetworkBehaviour
     private VictoryChecker victoryChecker = null;
     [SerializeField] private List<VictoryConditionSO> victoryConditions = null;
     private NetworkVariable<GameState> currentGameState;
+    private UIManager uiManager;
     #endregion
 
     #region Unity Event Functions
@@ -24,10 +25,13 @@ public class GameManager : NetworkBehaviour
 
         inGameCountdown = FindObjectOfType<InGameCountDown>();
         Assert.IsNotNull(inGameCountdown, "[GameManager at Awake]: The inGameCountdown component is null");
-        inGameCountdown.gameObject.SetActive(false);
 
         Assert.IsFalse(victoryConditions.Count == 0, "[GameManager at Awake]: The Victory conditions list is empty");
         victoryChecker = new VictoryChecker(victoryConditions);
+
+        // Init UIManager
+        uiManager = FindObjectOfType<UIManager>();
+        Assert.IsNotNull(uiManager, "[GameManager at Awake]: The UIManager is null");
     }
 
     private void Update()
@@ -53,13 +57,15 @@ public class GameManager : NetworkBehaviour
     /// </summary>
     public void StartGame_Server()
     {
-        inGameCountdown.gameObject.SetActive(true);
-        matchSecondsLeft.OnValueChanged += OnInGameCounterChanged;
-        StartInGameCountdown_Server();
         currentGameState.Value = GameState.Match;
-        Debug.Log("El juego ha empezado");
+        uiManager.ActivateInGameHUD();
+        matchSecondsLeft.OnValueChanged += OnInGameCounterChanged;
 
+        //Clients has to start the game before the countdown starts or it will through an error because some UI elements are not active.
         StartGameClientRpc();
+
+        StartInGameCountdown_Server();
+        Debug.Log("El juego ha empezado");
     }
 
     /// <summary>
@@ -68,7 +74,7 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     private void StartGameClientRpc()
     {
-        inGameCountdown.gameObject.SetActive(true);
+        uiManager.ActivateInGameHUD();
         matchSecondsLeft.OnValueChanged += OnInGameCounterChanged;
         Debug.Log("El juego ha empezado");
     }
@@ -78,10 +84,10 @@ public class GameManager : NetworkBehaviour
     /// </summary>
     private void FinishGame_Server()
     {
-        inGameCountdown.gameObject.SetActive(false);
         matchSecondsLeft.OnValueChanged -= OnInGameCounterChanged;
         StopInGameCountdown_Server();
         currentGameState.Value = GameState.MatchEnd;
+        uiManager.ActivateEndMatch();
         Debug.Log("El juego ha terminado");
 
         FinishGameClientRpc();
@@ -93,8 +99,8 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     private void FinishGameClientRpc()
     {
-        inGameCountdown.gameObject.SetActive(false);
         matchSecondsLeft.OnValueChanged -= OnInGameCounterChanged;
+        uiManager.ActivateEndMatch();
         Debug.Log("PARTIDA FINALIZADA");
     }
 
