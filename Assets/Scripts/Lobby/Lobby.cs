@@ -116,35 +116,23 @@ public class Lobby : NetworkBehaviour
 
 
     #endregion
-    /// <summary>
-    /// This method will start the lobby whenever the start condition turns to valid. In this case, when the lobby countdown reaches 0.
-    /// </summary>
-    [ClientRpc]
-    private void StartGameClientRpc()
-    {
-        StartGame();
-    }
 
-    private void StartGame()
+    private void StartGameServer()
     {
-        // Activate InGameUI
-        uiManager.ActivateInGameHUD();
+        if (!IsServer) return;
 
         //Spawn Players
-        if(IsServer)
+        ulong[] clientsId = new ulong[playersInLobby.Count];
+
+        for (int i = 0; i < clientsId.Length; i++)
         {
-            ulong[] clientsId = new ulong[playersInLobby.Count];
-
-            for (int i = 0; i < clientsId.Length; i++)
-            {
-                clientsId[i] = playersInLobby[i].playerId;
-            }
-
-            SpawnSystem.Instance.SpawnPlayersAtRandomSpawnPoint(clientsId);
+            clientsId[i] = playersInLobby[i].playerId;
         }
 
+        SpawnSystem.Instance.SpawnPlayersAtRandomSpawnPoint(clientsId);
+
         //Start Game in Game Manager
-        gameManager.StartGame();
+        gameManager.StartGame_Server();
     }
 
     public override void OnNetworkDespawn()
@@ -152,16 +140,13 @@ public class Lobby : NetworkBehaviour
         base.OnNetworkDespawn();
         Dispose();
     }
+
     private void Init()
     {
-        // Init the Lobby (only server)
-        if (IsServer)
-        {
-            Debug.Log("[SERVER] Initializing Lobby...");
-            
-            NetworkManager.Singleton.OnClientConnectedCallback += AddPlayerToLobby;
-            NetworkManager.Singleton.OnClientDisconnectCallback += RemovePlayerFromLobby;
-        }
+        Debug.Log("Initializing Lobby...");
+
+        NetworkManager.Singleton.OnClientConnectedCallback += AddPlayerToLobby;
+        NetworkManager.Singleton.OnClientDisconnectCallback += RemovePlayerFromLobby;
 
         // If you are the host, add yourself as a player to the lobby
         if (IsHost)
@@ -172,12 +157,8 @@ public class Lobby : NetworkBehaviour
 
     private void Dispose()
     {
-        // Dispose the Lobby (only server)
-        if (IsServer)
-        {
-            NetworkManager.Singleton.OnClientConnectedCallback -= AddPlayerToLobby;
-            NetworkManager.Singleton.OnClientDisconnectCallback -= RemovePlayerFromLobby;
-        }
+        NetworkManager.Singleton.OnClientConnectedCallback -= AddPlayerToLobby;
+        NetworkManager.Singleton.OnClientDisconnectCallback -= RemovePlayerFromLobby;
     }
 
     /// <summary>
@@ -200,6 +181,7 @@ public class Lobby : NetworkBehaviour
     /// <param name="clientId"></param>
     private void RemovePlayerFromLobby(ulong clientId)
     {
+        Debug.Log("xdesd");
         if(IsServer)
         {
             PlayerLobbyData disconnectedPlayer = SearchPlayerWithID(clientId);
@@ -209,6 +191,10 @@ public class Lobby : NetworkBehaviour
             
             playersInLobby.Remove(disconnectedPlayer);
             CheckForCountdownVisibility();
+        }
+        else if(IsClient)
+        {
+            uiManager.ActivateMainMenu();
         }
     }
 
@@ -304,11 +290,7 @@ public class Lobby : NetworkBehaviour
 
         if(lobbyCountdownSeconds.Value == 0)
         {
-            if (!IsHost)
-            {
-                StartGame();
-            }
-            StartGameClientRpc();
+            StartGameServer();
         }
     }
 }

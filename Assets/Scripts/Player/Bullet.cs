@@ -1,21 +1,22 @@
 using UnityEngine;
 using Unity.Netcode;
 
-
 /// <summary>
 /// This class represents a bullet from the player's weapon
 /// </summary>
 public class Bullet : NetworkBehaviour
 {
-    NetworkObject _networkObject;
+    #region Network Variables
 
-    public NetworkVariable<ulong> ShooterId;
+    public NetworkVariable<ulong> ShooterId; // id of the player who shot the bullet
+
+    #endregion
+
+    #region Unity Event Functions
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-
-        _networkObject = GetComponent<NetworkObject>();
 
         ShooterId = new NetworkVariable<ulong>();
 
@@ -27,44 +28,60 @@ public class Bullet : NetworkBehaviour
         ShooterId.OnValueChanged -= OnShooterIdValueChanged;
     }
 
-    void OnShooterIdValueChanged(ulong previous, ulong current)
-    {
-        ShooterId.Value = current;
-    }
-
-    /*
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (!IsServer)
+        {
+            return;
+        }
+
+        // this code can only be executed by the server
+
         int objectLayer = other.gameObject.layer;
 
         switch (objectLayer)
         {
             case 3: // damage player and despawn bullet
-                ulong otherId = other.GetComponent<NetworkObject>().NetworkObjectId;
+                ulong otherId = other.gameObject.GetComponent<NetworkObject>().NetworkObjectId;
                 if (otherId != ShooterId.Value)
                 {
-                    HitPlayerServerRpc(otherId);
-                    DespawnBulletServerRpc();
+                    Debug.Log("Player " + ShooterId.Value + " hit player " + otherId);
+                    HitPlayer(other.gameObject.GetComponent<Player>());
+                    DespawnBullet();
                 }
                 break;
             case 6: // despawn bullet
-                DespawnBulletServerRpc();
+                //Debug.Log("Bullet hit an obstacle");
+                DespawnBullet();
                 break;
             default:
                 break;
         }
     }
-    */
 
-    [ServerRpc(RequireOwnership = false)]
-    private void DespawnBulletServerRpc()
+    #endregion
+
+    #region Private Methods
+
+    void DespawnBullet()
     {
-        _networkObject.Despawn();
+        //Debug.Log("Despawning bullet...");
+        GetComponent<NetworkObject>().Despawn();
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void HitPlayerServerRpc(ulong playerId)
+    void HitPlayer(Player player)
     {
-        Debug.Log("Hit player " + playerId);
+        player.Health.Value--;
     }
+
+    #endregion
+
+    #region Netcode Related Methods
+
+    void OnShooterIdValueChanged(ulong previous, ulong current)
+    {
+        ShooterId.Value = current;
+    }
+
+    #endregion
 }

@@ -9,7 +9,6 @@ public class UIManager : MonoBehaviour
 {
 
     #region Variables
-
     [SerializeField] NetworkManager networkManager;
     UnityTransport transport;
 
@@ -33,10 +32,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject inGameHUD;
     [SerializeField] RawImage[] heartsUI = new RawImage[3];
 
+    [Header("End match")]
+    [SerializeField] private GameObject endMatch;
     #endregion
 
     #region Unity Event Functions
-
     private void Awake()
     {
         transport = (UnityTransport)networkManager.NetworkConfig.NetworkTransport;
@@ -48,23 +48,7 @@ public class UIManager : MonoBehaviour
         buttonClient.onClick.AddListener(() => StartClient());
         buttonServer.onClick.AddListener(() => StartServer());
         ActivateMainMenu();
-
-        NetworkManager.Singleton.OnServerStarted += OnServerReady;
     }
-
-    /// <summary>
-    /// This method will be called whenever the server is ready to be used.
-    /// </summary>
-    private void OnServerReady()
-    {
-        if (NetworkManager.Singleton.IsServer)
-        {
-            // The server spawns the lobby
-            GameObject lobbyGameObject = Instantiate(lobbyPrefab);
-            lobbyGameObject.GetComponent<NetworkObject>().Spawn();
-        }
-    }
-
     #endregion
 
     #region UI Related Methods
@@ -74,6 +58,7 @@ public class UIManager : MonoBehaviour
         mainMenu.SetActive(true);
         inGameHUD.SetActive(false);
         lobby.SetActive(false);
+        endMatch.SetActive(false);
     }
 
     public void ActivateInGameHUD()
@@ -81,6 +66,7 @@ public class UIManager : MonoBehaviour
         mainMenu.SetActive(false);
         inGameHUD.SetActive(true);
         lobby.SetActive(false);
+        endMatch.SetActive(false);
 
         // for test purposes
         UpdateLifeUI(Random.Range(1, 6));
@@ -89,6 +75,15 @@ public class UIManager : MonoBehaviour
     private void ActivateLobby()
     {
         lobby.SetActive(true);
+        mainMenu.SetActive(false);
+        inGameHUD.SetActive(false);
+        endMatch.SetActive(false);
+    }
+
+    public void ActivateEndMatch()
+    {
+        endMatch.SetActive(true);
+        lobby.SetActive(false);
         mainMenu.SetActive(false);
         inGameHUD.SetActive(false);
     }
