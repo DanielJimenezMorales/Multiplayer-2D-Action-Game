@@ -6,9 +6,16 @@ using Unity.Netcode;
 
 public class Player : NetworkBehaviour
 {
-    #region Variables
+    #region Network Variables
 
     public NetworkVariable<PlayerState> State;
+    public NetworkVariable<int> Health;
+
+    #endregion
+
+    #region Constants
+
+    const int MAX_HEALTH = 6;
 
     #endregion
 
@@ -20,13 +27,16 @@ public class Player : NetworkBehaviour
 
         ConfigurePlayer(OwnerClientId);
         State = new NetworkVariable<PlayerState>();
+        Health = new NetworkVariable<int>(MAX_HEALTH);
 
         State.OnValueChanged += OnPlayerStateValueChanged;
+        Health.OnValueChanged += OnPlayerHealthValueChanged;
     }
 
     public override void OnNetworkDespawn()
     {
         State.OnValueChanged -= OnPlayerStateValueChanged;
+        Health.OnValueChanged -= OnPlayerHealthValueChanged;
     }
 
     #endregion
@@ -73,6 +83,12 @@ public class Player : NetworkBehaviour
         State.Value = state;
     }
 
+    [ServerRpc]
+    public void UpdatePlayerHealthServerRpc(int health)
+    {
+        Health.Value = health;
+    }
+
     #endregion
 
     #endregion
@@ -83,6 +99,12 @@ public class Player : NetworkBehaviour
     {
         State.Value = current;
         //Debug.Log("Player state: " + previous + " -> " + current);
+    }
+
+    void OnPlayerHealthValueChanged(int previous, int current)
+    {
+        Health.Value = current;
+        Debug.Log("Player health dropped from " + previous + " to " + current);
     }
 
     #endregion
