@@ -151,7 +151,7 @@ public class PlayerController : NetworkBehaviour
             // Spawn the bullet
             bullet.GetComponent<NetworkObject>().Spawn();
             // Change bullet shooter id
-            bullet.GetComponent<Bullet>().ShooterId.Value = NetworkObjectId;
+            bullet.GetComponent<Bullet>().ShooterId.Value = OwnerClientId;
         }
     }
 

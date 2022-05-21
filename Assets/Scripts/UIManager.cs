@@ -14,8 +14,6 @@ public class UIManager : MonoBehaviour
 
     readonly ushort port = 7777;
 
-    [SerializeField] Sprite[] hearts = new Sprite[3];
-
     [Header("Main Menu")]
     [SerializeField] private GameObject mainMenu;
     [SerializeField] private Button buttonHost;
@@ -30,7 +28,6 @@ public class UIManager : MonoBehaviour
 
     [Header("In-Game HUD")]
     [SerializeField] private GameObject inGameHUD;
-    [SerializeField] RawImage[] heartsUI = new RawImage[3];
 
     [Header("End match")]
     [SerializeField] private GameObject endMatch;
@@ -67,9 +64,6 @@ public class UIManager : MonoBehaviour
         inGameHUD.SetActive(true);
         lobby.SetActive(false);
         endMatch.SetActive(false);
-
-        // for test purposes
-        UpdateLifeUI(Random.Range(1, 6));
     }
 
     private void ActivateLobby()
@@ -88,42 +82,7 @@ public class UIManager : MonoBehaviour
         inGameHUD.SetActive(false);
     }
 
-    public void UpdateLifeUI(int hitpoints)
-    {
-        switch (hitpoints)
-        {
-            case 6:
-                heartsUI[0].texture = hearts[2].texture;
-                heartsUI[1].texture = hearts[2].texture;
-                heartsUI[2].texture = hearts[2].texture;
-                break;
-            case 5:
-                heartsUI[0].texture = hearts[1].texture;
-                heartsUI[1].texture = hearts[2].texture;
-                heartsUI[2].texture = hearts[2].texture;
-                break;
-            case 4:
-                heartsUI[0].texture = hearts[0].texture;
-                heartsUI[1].texture = hearts[2].texture;
-                heartsUI[2].texture = hearts[2].texture;
-                break;
-            case 3:
-                heartsUI[0].texture = hearts[0].texture;
-                heartsUI[1].texture = hearts[1].texture;
-                heartsUI[2].texture = hearts[2].texture;
-                break;
-            case 2:
-                heartsUI[0].texture = hearts[0].texture;
-                heartsUI[1].texture = hearts[0].texture;
-                heartsUI[2].texture = hearts[2].texture;
-                break;
-            case 1:
-                heartsUI[0].texture = hearts[0].texture;
-                heartsUI[1].texture = hearts[0].texture;
-                heartsUI[2].texture = hearts[1].texture;
-                break;
-        }
-    }
+ 
 
     #endregion
 

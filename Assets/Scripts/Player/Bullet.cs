@@ -42,7 +42,7 @@ public class Bullet : NetworkBehaviour
         switch (objectLayer)
         {
             case 3: // damage player and despawn bullet
-                ulong otherId = other.gameObject.GetComponent<NetworkObject>().NetworkObjectId;
+                ulong otherId = other.gameObject.GetComponent<NetworkObject>().OwnerClientId;
                 if (otherId != ShooterId.Value)
                 {
                     Debug.Log("Player " + ShooterId.Value + " hit player " + otherId);
@@ -71,7 +71,8 @@ public class Bullet : NetworkBehaviour
 
     void HitPlayer(Player player)
     {
-        player.Health.Value--;
+        if (player.Health.Value > 0)
+            player.Health.Value--;
     }
 
     #endregion
