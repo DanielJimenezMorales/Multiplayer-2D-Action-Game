@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 using Unity.Netcode;
+using UnityEngine.Assertions;
 
 public class Player : NetworkBehaviour
 {
@@ -10,6 +9,12 @@ public class Player : NetworkBehaviour
 
     public NetworkVariable<PlayerState> State;
     public NetworkVariable<int> Health;
+
+    #endregion
+
+    #region Private Variables
+
+    PlayerHealthIndicator healthIndicator;
 
     #endregion
 
@@ -37,6 +42,15 @@ public class Player : NetworkBehaviour
     {
         State.OnValueChanged -= OnPlayerStateValueChanged;
         Health.OnValueChanged -= OnPlayerHealthValueChanged;
+    }
+
+    private void Start()
+    {
+        if (!IsClient)
+            return;
+
+        healthIndicator = FindObjectOfType<PlayerHealthIndicator>();
+        Assert.IsNotNull(healthIndicator, "[Player at NetworkSpawn]: The playerHealthIndicator component is null");
     }
 
     #endregion
@@ -86,7 +100,18 @@ public class Player : NetworkBehaviour
     [ServerRpc]
     public void UpdatePlayerHealthServerRpc(int health)
     {
-        Health.Value = health;
+        if (health > 0)
+            Health.Value = health;
+    }
+
+    #endregion
+
+    #region ClientRPC
+
+    [ClientRpc]
+    public void UpdatePlayerHealthClientRpc(int health, ClientRpcParams clientRpcParams = default)
+    {
+        healthIndicator.UpdateLifeUI(health);
     }
 
     #endregion
@@ -104,7 +129,19 @@ public class Player : NetworkBehaviour
     void OnPlayerHealthValueChanged(int previous, int current)
     {
         Health.Value = current;
-        Debug.Log("Player health dropped from " + previous + " to " + current);
+        //Debug.Log("Player " + OwnerClientId + 
+            //" health dropped from " + previous + " to " + current);
+
+        // only execute the client RPC on the owner of this object
+        ClientRpcParams clientRpcParams = new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = new ulong[] { OwnerClientId }
+            }
+        };
+
+        UpdatePlayerHealthClientRpc(current, clientRpcParams);
     }
 
     #endregion
