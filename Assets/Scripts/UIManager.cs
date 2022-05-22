@@ -31,6 +31,9 @@ public class UIManager : MonoBehaviour
 
     [Header("End match")]
     [SerializeField] private GameObject endMatch;
+
+    [Header("Name Selection")]
+    [SerializeField] private GameObject nameSelection;
     #endregion
 
     #region Unity Event Functions
@@ -56,6 +59,7 @@ public class UIManager : MonoBehaviour
         inGameHUD.SetActive(false);
         lobby.SetActive(false);
         endMatch.SetActive(false);
+        nameSelection.SetActive(false);
     }
 
     public void ActivateInGameHUD()
@@ -64,14 +68,16 @@ public class UIManager : MonoBehaviour
         inGameHUD.SetActive(true);
         lobby.SetActive(false);
         endMatch.SetActive(false);
+        nameSelection.SetActive(false);
     }
 
-    private void ActivateLobby()
+    public void ActivateLobby()
     {
         lobby.SetActive(true);
         mainMenu.SetActive(false);
         inGameHUD.SetActive(false);
         endMatch.SetActive(false);
+        nameSelection.SetActive(false);
     }
 
     public void ActivateEndMatch()
@@ -80,9 +86,17 @@ public class UIManager : MonoBehaviour
         lobby.SetActive(false);
         mainMenu.SetActive(false);
         inGameHUD.SetActive(false);
+        nameSelection.SetActive(false);
     }
 
- 
+    public void ActivateNameSelection()
+    {
+        nameSelection.SetActive(true);
+        endMatch.SetActive(false);
+        lobby.SetActive(false);
+        mainMenu.SetActive(false);
+        inGameHUD.SetActive(false);
+    }
 
     #endregion
 
@@ -101,8 +115,8 @@ public class UIManager : MonoBehaviour
             transport.SetConnectionData(ip, port);
         }
         NetworkManager.Singleton.StartClient();
-
-        ActivateLobby();
+        ActivateNameSelection();
+        //ActivateLobby();
     }
 
     private void StartServer()
