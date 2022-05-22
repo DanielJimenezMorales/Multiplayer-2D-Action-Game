@@ -181,7 +181,6 @@ public class Lobby : NetworkBehaviour
     /// <param name="clientId"></param>
     private void RemovePlayerFromLobby(ulong clientId)
     {
-        Debug.Log("xdesd");
         if(IsServer)
         {
             PlayerLobbyData disconnectedPlayer = SearchPlayerWithID(clientId);
