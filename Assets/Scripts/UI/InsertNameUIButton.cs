@@ -5,6 +5,9 @@ using UnityEngine.Assertions;
 using UnityEngine.UI;
 using Unity.Netcode;
 
+/// <summary>
+/// This class manage the behaviour when pressing the Insert Name button
+/// </summary>
 public class InsertNameUIButton : MonoBehaviour
 {
     [SerializeField] private InputField inputField = null;
@@ -17,6 +20,9 @@ public class InsertNameUIButton : MonoBehaviour
         Assert.IsNotNull(uiManager, "[InsertNameUIButton at Awake]: The UIManager component is null");
     }
 
+    /// <summary>
+    /// This methods tells to the server that the name has been changed.
+    /// </summary>
     public void SendNameInformation()
     {
         string name = inputField.text;

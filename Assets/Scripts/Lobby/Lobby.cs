@@ -130,7 +130,7 @@ public class Lobby : NetworkBehaviour
             clientsId[i] = playersInLobby[i].playerId;
         }
 
-        SpawnSystem.Instance.SpawnPlayersAtRandomSpawnPoint(clientsId);
+        SpawnSystem.Instance.SpawnPlayersFromLobbyAtRandomSpawnPoint(GetPlayersLobbyData());
 
         //Start Game in Game Manager
         gameManager.StartGame_Server();
@@ -226,10 +226,10 @@ public class Lobby : NetworkBehaviour
     }
 
     /// <summary>
-    /// Updates the lobby player list UI whenever there is a change.
+    /// Get the current player lobby data list. (Because we can't return the content of a network List easier)
     /// </summary>
-    /// <param name="changeEvent"></param>
-    private void UpdateLobbyPlayerList()
+    /// <returns></returns>
+    private IReadOnlyList<PlayerLobbyData> GetPlayersLobbyData()
     {
         List<PlayerLobbyData> players = new List<PlayerLobbyData>();
         foreach (PlayerLobbyData playerData in playersInLobby)
@@ -237,7 +237,16 @@ public class Lobby : NetworkBehaviour
             players.Add(playerData);
         }
 
-        playerLobbyUIController.UpdatePlayers(players);
+        return players;
+    }
+
+    /// <summary>
+    /// Updates the lobby player list UI whenever there is a change.
+    /// </summary>
+    /// <param name="changeEvent"></param>
+    private void UpdateLobbyPlayerList()
+    {
+        playerLobbyUIController.UpdatePlayers(GetPlayersLobbyData());
     }
 
     /// <summary>
