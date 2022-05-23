@@ -1,13 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Unity.Netcode;
-using System;
 
 public class GameManager : NetworkBehaviour
 {
     #region Variables
+    public event Action OnMatchFinished;
     private const int MATCH_SECONDS = 5;
     private InGameCountDown inGameCountdown = null;
     private NetworkVariable<int> matchSecondsLeft;
@@ -99,6 +100,7 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     private void FinishGameClientRpc()
     {
+        OnMatchFinished?.Invoke();
         matchSecondsLeft.OnValueChanged -= OnInGameCounterChanged;
         uiManager.ActivateEndMatch();
         Debug.Log("PARTIDA FINALIZADA");

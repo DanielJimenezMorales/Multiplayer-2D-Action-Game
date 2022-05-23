@@ -365,6 +365,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bc3ae821301b64e4cb2bb65b9e9a71ad, type: 3}
+--- !u!1 &271056789 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6499778016409081929, guid: ef5e6e7b389e41c49a739316342228b8, type: 3}
+  m_PrefabInstance: {fileID: 1737133369708097605}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &355962806
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1286,6 +1291,10 @@ PrefabInstance:
       propertyPath: inputFieldIP
       value: 
       objectReference: {fileID: 1920566842}
+    - target: {fileID: 1332957947535845843, guid: 24b3e92d40fdae54088fb6f13ef5342c, type: 3}
+      propertyPath: nameSelection
+      value: 
+      objectReference: {fileID: 271056789}
     - target: {fileID: 1332957947535845843, guid: 24b3e92d40fdae54088fb6f13ef5342c, type: 3}
       propertyPath: networkManager
       value: 

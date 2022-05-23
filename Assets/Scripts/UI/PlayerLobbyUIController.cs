@@ -59,6 +59,7 @@ public class PlayerLobbyUIController : MonoBehaviour
     /// <param name="playersInLobby"></param>
     public void UpdatePlayers(IList<PlayerLobbyData> playersInLobby)
     {
+        Debug.Log("Actualizacion");
         Assert.IsFalse(playersInLobby.Count > playerLobbyContainers.Length, $"[PlayerLobbyUIController at UpdatePlayers]: The new players list [{playersInLobby.Count}]" +
             $" is bigger than the actual lobbyCapacity [{playerLobbyContainers.Length}]");
 
@@ -93,7 +94,6 @@ public class PlayerLobbyUIController : MonoBehaviour
     /// <param name="container"></param>
     private void DeactivateLobbyRow(PlayerLobbyContainer container)
     {
-
         container.gameObject.SetActive(false);
         container.SetText("None");
     }

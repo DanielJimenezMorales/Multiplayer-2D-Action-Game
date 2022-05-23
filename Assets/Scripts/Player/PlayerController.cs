@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using Unity.Netcode;
+using System;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(CapsuleCollider2D))]
@@ -9,7 +10,7 @@ public class PlayerController : NetworkBehaviour
 {
 
     #region Variables
-
+    private GameManager gameManager = null;
     readonly float speed = 3.4f;
     readonly float jumpHeight = 6.5f;
     readonly float gravity = 1.5f;
@@ -40,6 +41,7 @@ public class PlayerController : NetworkBehaviour
 
     private void Awake()
     {
+        gameManager = FindObjectOfType<GameManager>();
         rb = GetComponent<Rigidbody2D>();
         collider = GetComponent<CapsuleCollider2D>();
         handler = GetComponent<InputHandler>();
@@ -59,6 +61,14 @@ public class PlayerController : NetworkBehaviour
         handler.OnMoveFixedUpdate.AddListener(UpdatePlayerPositionServerRpc);
 
         FlipSprite.OnValueChanged += OnFlipSpriteValueChanged;
+
+        gameManager.OnMatchFinished += DisablePlayerInputSystem;
+        gameManager.OnMatchFinished += StopPlayerMovementServerRpc;
+    }
+
+    private void DisablePlayerInputSystem()
+    {
+        handler.enabled = false;
     }
 
     private void OnDisable()
@@ -69,6 +79,9 @@ public class PlayerController : NetworkBehaviour
         handler.OnMoveFixedUpdate.RemoveListener(UpdatePlayerPositionServerRpc);
 
         FlipSprite.OnValueChanged -= OnFlipSpriteValueChanged;
+
+        gameManager.OnMatchFinished -= DisablePlayerInputSystem;
+        gameManager.OnMatchFinished -= StopPlayerMovementServerRpc;
     }
 
     void Start()
@@ -167,6 +180,12 @@ public class PlayerController : NetworkBehaviour
         {
             rb.velocity = new Vector2(input.x * speed, rb.velocity.y);
         }
+    }
+
+    [ServerRpc]
+    private void StopPlayerMovementServerRpc()
+    {
+        rb.velocity = new Vector2(0, rb.velocity.y);
     }
 
     #endregion

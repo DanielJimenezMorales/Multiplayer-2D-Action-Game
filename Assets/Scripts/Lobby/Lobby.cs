@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.Assertions;
+using Unity.Collections;
 
 /// <summary>
 /// Main class of the lobby. It manages all the logic of the lobby and communicates with every UI object of the lobby screen.
@@ -181,7 +182,6 @@ public class Lobby : NetworkBehaviour
     /// <param name="clientId"></param>
     private void RemovePlayerFromLobby(ulong clientId)
     {
-        Debug.Log("xdesd");
         if(IsServer)
         {
             PlayerLobbyData disconnectedPlayer = SearchPlayerWithID(clientId);
@@ -217,13 +217,22 @@ public class Lobby : NetworkBehaviour
     }
 
     /// <summary>
-    /// Updates the lobby player list UI whenever there is a change.
+    /// Updates the lobby player list UI when a player connects or disconnects.
     /// </summary>
     /// <param name="changeEvent"></param>
     private void UpdateLobbyPlayerList(NetworkListEvent<PlayerLobbyData> changeEvent)
     {
+        UpdateLobbyPlayerList();
+    }
+
+    /// <summary>
+    /// Updates the lobby player list UI whenever there is a change.
+    /// </summary>
+    /// <param name="changeEvent"></param>
+    private void UpdateLobbyPlayerList()
+    {
         List<PlayerLobbyData> players = new List<PlayerLobbyData>();
-        foreach(PlayerLobbyData playerData in playersInLobby)
+        foreach (PlayerLobbyData playerData in playersInLobby)
         {
             players.Add(playerData);
         }
@@ -292,5 +301,25 @@ public class Lobby : NetworkBehaviour
         {
             StartGameServer();
         }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void SetPlayerNameServerRpc(ulong clientID, string newName)
+    {
+        int index = 0;
+        foreach(PlayerLobbyData playerLobbyData in playersInLobby)
+        {
+            if(playerLobbyData.playerId == clientID)
+            {
+                Debug.Log("duifjhdfik");
+                break;
+            }
+            index++;
+        }
+
+        PlayerLobbyData modifiedPlayer = playersInLobby[index];
+        modifiedPlayer.playerName = newName;
+        playersInLobby[index] = modifiedPlayer;
+        UpdateLobbyPlayerList();
     }
 }
