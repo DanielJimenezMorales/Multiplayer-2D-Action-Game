@@ -9,7 +9,7 @@ public class GameManager : NetworkBehaviour
 {
     #region Variables
     public event Action OnMatchFinished;
-    private const int MATCH_SECONDS = 5;
+    private const int MATCH_SECONDS = 105;
     private InGameCountDown inGameCountdown = null;
     private NetworkVariable<int> matchSecondsLeft;
     private VictoryChecker victoryChecker = null;

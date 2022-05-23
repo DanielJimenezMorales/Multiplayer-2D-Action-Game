@@ -57,7 +57,7 @@ public class PlayerLobbyUIController : MonoBehaviour
     /// This method will update the UI of the players in lobby whenever a new change is made
     /// </summary>
     /// <param name="playersInLobby"></param>
-    public void UpdatePlayers(IList<PlayerLobbyData> playersInLobby)
+    public void UpdatePlayers(IReadOnlyList<PlayerLobbyData> playersInLobby)
     {
         Debug.Log("Actualizacion");
         Assert.IsFalse(playersInLobby.Count > playerLobbyContainers.Length, $"[PlayerLobbyUIController at UpdatePlayers]: The new players list [{playersInLobby.Count}]" +

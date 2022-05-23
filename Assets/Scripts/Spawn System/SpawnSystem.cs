@@ -33,15 +33,16 @@ public class SpawnSystem : MonoBehaviour
     public void RemoveSpawnPoint(Transform transform) => spawns.Remove(transform);
 
     /// <summary>
-    /// Spawns one player per clientId at a random sapwn point
+    /// Spawns one player per clientId at a random sapwn point the first time (When they come from the lobby)
     /// </summary>
     /// <param name="clientsId"></param>
-    public void SpawnPlayersAtRandomSpawnPoint(ulong[] clientsId)
+    public void SpawnPlayersFromLobbyAtRandomSpawnPoint(IReadOnlyList<PlayerLobbyData> playersLobbyData)
     {
-        for (int i = 0; i < clientsId.Length; i++)
+        for (int i = 0; i < playersLobbyData.Count; i++)
         {
             int spawnPointIndex = GetRandomSpawnPoint();
-            SpawnPlayer(clientsId[i], spawns[spawnPointIndex].position);
+            GameObject player = SpawnPlayer(playersLobbyData[i].playerId, spawns[spawnPointIndex].position);
+            player.GetComponentInChildren<PlayerNameUI>().SetNameServer(playersLobbyData[i].playerName.ToString());
         }
     }
 
@@ -50,10 +51,11 @@ public class SpawnSystem : MonoBehaviour
     /// </summary>
     /// <param name="clientId">The client who owns the player</param>
     /// <param name="position">The spawning position</param>
-    private void SpawnPlayer(ulong clientId, Vector3 position)
+    private GameObject SpawnPlayer(ulong clientId, Vector3 position)
     {
         var player = Instantiate(playerPrefab, position, Quaternion.identity);
         player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+        return player;
     }
 
     /// <summary>
