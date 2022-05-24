@@ -8,6 +8,7 @@ public class Player : NetworkBehaviour
     #region Network Variables
 
     public NetworkVariable<PlayerState> State;
+    public NetworkVariable<bool> Alive;
     public NetworkVariable<int> Health;
 
     #endregion
@@ -33,6 +34,7 @@ public class Player : NetworkBehaviour
         ConfigurePlayer(OwnerClientId);
         State = new NetworkVariable<PlayerState>();
         Health = new NetworkVariable<int>(MAX_HEALTH);
+        Alive = new NetworkVariable<bool>(true);
 
         State.OnValueChanged += OnPlayerStateValueChanged;
         Health.OnValueChanged += OnPlayerHealthValueChanged;
@@ -51,6 +53,15 @@ public class Player : NetworkBehaviour
 
         healthIndicator = FindObjectOfType<PlayerHealthIndicator>();
         Assert.IsNotNull(healthIndicator, "[Player at NetworkSpawn]: The playerHealthIndicator component is null");
+    }
+
+    private void Update()
+    {
+        if (!IsServer)
+            return;
+
+        if (Health.Value <= 0) // if health drops to zero the player should be respawned
+            Alive.Value = false;
     }
 
     #endregion

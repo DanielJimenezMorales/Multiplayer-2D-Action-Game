@@ -14,7 +14,8 @@ public class SpawnSystem : MonoBehaviour
     [SerializeField]
     private GameObject playerPrefab = null;
 
-    private List<Transform> spawns = new List<Transform>();
+    // list of spawn points available on the map
+    private List<SpawnPoint> spawns = new List<SpawnPoint>();
 
     private void Awake()
     {
@@ -28,9 +29,9 @@ public class SpawnSystem : MonoBehaviour
         }
     }
 
-    public void AddSpawnPoint(Transform transform) => spawns.Add(transform);
+    public void AddSpawnPoint(SpawnPoint spawnPoint) => spawns.Add(spawnPoint);
 
-    public void RemoveSpawnPoint(Transform transform) => spawns.Remove(transform);
+    public void RemoveSpawnPoint(SpawnPoint spawnPoint) => spawns.Remove(spawnPoint);
 
     /// <summary>
     /// Spawns one player per clientId at a random spawn point the first time (when they come from the lobby)
@@ -40,8 +41,12 @@ public class SpawnSystem : MonoBehaviour
     {
         for (int i = 0; i < playersLobbyData.Count; i++)
         {
-            int spawnPointIndex = GetRandomSpawnPoint();
-            GameObject player = SpawnPlayer(playersLobbyData[i].playerId, spawns[spawnPointIndex].position);
+            int spawnPointIndex = GetRandomSpawnPointIndex(); // pick a random index
+            SpawnPoint selectedSpawn = spawns[spawnPointIndex];
+            selectedSpawn.Available = false; // set the selected spawn to unavailable
+            // spawn player at spawn point
+            GameObject player = SpawnPlayer(playersLobbyData[i].playerId, selectedSpawn.transform.position);
+            // set player name
             player.GetComponentInChildren<PlayerNameUI>().SetNameServer(playersLobbyData[i].playerName.ToString());
         }
     }
@@ -59,11 +64,14 @@ public class SpawnSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// Pick a random spawn within the list
+    /// Pick a random avalaible spawn point within the list
     /// </summary>
-    /// <returns>The spawn point index</returns>
-    private int GetRandomSpawnPoint()
+    /// <returns>A random index</returns>
+    private int GetRandomSpawnPointIndex()
     {
-        return Random.Range(0, spawns.Count);
+        int spawnRndIdx = Random.Range(0, spawns.Count);
+        while (!spawns[spawnRndIdx].Available)
+            spawnRndIdx = Random.Range(0, spawns.Count);
+        return spawnRndIdx;
     }
 }
