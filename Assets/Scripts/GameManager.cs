@@ -68,7 +68,7 @@ public class GameManager : NetworkBehaviour
         StartGameClientRpc();
 
         StartInGameCountdown_Server();
-        Debug.Log("El juego ha empezado");
+        Debug.Log("[Server] Game started");
     }
 
     /// <summary>
@@ -79,7 +79,7 @@ public class GameManager : NetworkBehaviour
     {
         uiManager.ActivateInGameHUD();
         matchSecondsLeft.OnValueChanged += OnInGameCounterChanged;
-        Debug.Log("El juego ha empezado");
+        Debug.Log($"[Client] Game started");
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public class GameManager : NetworkBehaviour
         StopInGameCountdown_Server();
         currentGameState.Value = GameState.MatchEnd;
         uiManager.ActivateEndMatch();
-        Debug.Log("El juego ha terminado");
+        Debug.Log($"[Server] Game ended");
 
         FinishGameClientRpc();
     }
@@ -106,7 +106,7 @@ public class GameManager : NetworkBehaviour
         OnMatchFinished?.Invoke();
         matchSecondsLeft.OnValueChanged -= OnInGameCounterChanged;
         uiManager.ActivateEndMatch();
-        Debug.Log("PARTIDA FINALIZADA");
+        Debug.Log("[Client] Match ended");
     }
 
     /// <summary>

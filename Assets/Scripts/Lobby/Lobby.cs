@@ -144,7 +144,7 @@ public class Lobby : NetworkBehaviour
 
     private void Init()
     {
-        Debug.Log("Initializing Lobby...");
+        Debug.Log("[Server] Initializing lobby...");
 
         NetworkManager.Singleton.OnClientConnectedCallback += AddPlayerToLobby;
         NetworkManager.Singleton.OnClientDisconnectCallback += RemovePlayerFromLobby;
@@ -263,7 +263,7 @@ public class Lobby : NetworkBehaviour
             // Show countdown and hide info text
             if(!lobbyCountdown.gameObject.activeInHierarchy)
             {
-                Debug.Log("Show lobby countdown");
+                Debug.Log("[Server] Show lobby countdown");
                 StartLobbyCountdown();
             }
 
@@ -274,7 +274,7 @@ public class Lobby : NetworkBehaviour
             // Show info text and hide countdown
             if(lobbyCountdown.gameObject.activeInHierarchy)
             {
-                Debug.Log("Stop lobby countdown");
+                Debug.Log("[Server] Stop lobby countdown");
                 StopLobbyCountdown();
             }
 
@@ -320,7 +320,6 @@ public class Lobby : NetworkBehaviour
         {
             if(playerLobbyData.playerId == clientID)
             {
-                Debug.Log("duifjhdfik");
                 break;
             }
             index++;
