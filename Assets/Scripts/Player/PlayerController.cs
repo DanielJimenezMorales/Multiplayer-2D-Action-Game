@@ -32,7 +32,7 @@ public class PlayerController : NetworkBehaviour
     // Firing system variables
     [SerializeField]
     private GameObject bulletPrefab = null;
-    private float bulletSpeed = 2f;
+    private float bulletSpeed = 3f;
     private Weapon weapon;
 
     #endregion
@@ -153,9 +153,9 @@ public class PlayerController : NetworkBehaviour
     [ServerRpc]
     private void FireBulletServerRpc(Vector2 input)
     {
-        if (weapon.WeaponCooldown <= 0) // only shoot if weapon is charged
+        if (weapon.GetWeaponCooldown() <= 0) // only shoot if weapon is charged
         {
-            weapon.HasFired = true;
+            weapon.SetHasFired(true);
             // Instantiate a bullet
             GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
             // Change instance's rigidbody velocity
