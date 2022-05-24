@@ -122,7 +122,7 @@ public class Lobby : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        //Spawn Players
+        // Spawn players
         ulong[] clientsId = new ulong[playersInLobby.Count];
 
         for (int i = 0; i < clientsId.Length; i++)
@@ -132,7 +132,7 @@ public class Lobby : NetworkBehaviour
 
         SpawnSystem.Instance.SpawnPlayersFromLobbyAtRandomSpawnPoint(GetPlayersLobbyData());
 
-        //Start Game in Game Manager
+        // Start game in Game Manager
         gameManager.StartGame_Server();
     }
 
@@ -226,7 +226,7 @@ public class Lobby : NetworkBehaviour
     }
 
     /// <summary>
-    /// Get the current player lobby data list. (Because we can't return the content of a network List easier)
+    /// Get the current player lobby data list. (because we can't return the content of a NetworkList easier)
     /// </summary>
     /// <returns></returns>
     private IReadOnlyList<PlayerLobbyData> GetPlayersLobbyData()
@@ -260,7 +260,7 @@ public class Lobby : NetworkBehaviour
 
         if(playersInLobby.Count >= MINIMUM_PLAYERS_IN_LOBBY)
         {
-            //Show countdown and hide info text
+            // Show countdown and hide info text
             if(!lobbyCountdown.gameObject.activeInHierarchy)
             {
                 Debug.Log("Show lobby countdown");
@@ -271,7 +271,7 @@ public class Lobby : NetworkBehaviour
         }
         else
         {
-            //Show info text and hide countdown
+            // Show info text and hide countdown
             if(lobbyCountdown.gameObject.activeInHierarchy)
             {
                 Debug.Log("Stop lobby countdown");

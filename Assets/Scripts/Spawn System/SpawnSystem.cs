@@ -33,7 +33,7 @@ public class SpawnSystem : MonoBehaviour
     public void RemoveSpawnPoint(Transform transform) => spawns.Remove(transform);
 
     /// <summary>
-    /// Spawns one player per clientId at a random sapwn point the first time (When they come from the lobby)
+    /// Spawns one player per clientId at a random spawn point the first time (when they come from the lobby)
     /// </summary>
     /// <param name="clientsId"></param>
     public void SpawnPlayersFromLobbyAtRandomSpawnPoint(IReadOnlyList<PlayerLobbyData> playersLobbyData)

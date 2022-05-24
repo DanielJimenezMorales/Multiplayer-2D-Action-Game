@@ -8,7 +8,7 @@ using Unity.Collections;
 using System;
 
 /// <summary>
-/// This class manage the player name UI
+/// This class manages the player name UI
 /// </summary>
 [RequireComponent(typeof(TextMeshProUGUI))]
 public class PlayerNameUI : NetworkBehaviour
