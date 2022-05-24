@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using Unity.Netcode;
 
 /// <summary>
-/// This class manage the behaviour when pressing the Insert Name button
+/// This class manages the behaviour when pressing the Insert Name button
 /// </summary>
 public class InsertNameUIButton : MonoBehaviour
 {
@@ -21,7 +21,7 @@ public class InsertNameUIButton : MonoBehaviour
     }
 
     /// <summary>
-    /// This methods tells to the server that the name has been changed.
+    /// This methods tells the server that the name has been changed.
     /// </summary>
     public void SendNameInformation()
     {

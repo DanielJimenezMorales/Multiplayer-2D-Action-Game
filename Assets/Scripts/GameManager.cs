@@ -54,7 +54,8 @@ public class GameManager : NetworkBehaviour
     }
 
     /// <summary>
-    /// This method will start the match in the server and will share it with the rest of clients.
+    /// This method starts the match in the server and orders all clients to start the game
+    /// as well
     /// </summary>
     public void StartGame_Server()
     {
@@ -62,7 +63,8 @@ public class GameManager : NetworkBehaviour
         uiManager.ActivateInGameHUD();
         matchSecondsLeft.OnValueChanged += OnInGameCounterChanged;
 
-        //Clients has to start the game before the countdown starts or it will through an error because some UI elements are not active.
+        // All clients have to start the game before the countdown starts or an exception
+        // will be thrown because some UI elements are not active.
         StartGameClientRpc();
 
         StartInGameCountdown_Server();
@@ -70,7 +72,7 @@ public class GameManager : NetworkBehaviour
     }
 
     /// <summary>
-    /// This method will start the match in the client.
+    /// This method starts the match in the client.
     /// </summary>
     [ClientRpc]
     private void StartGameClientRpc()
@@ -81,7 +83,8 @@ public class GameManager : NetworkBehaviour
     }
 
     /// <summary>
-    /// This method will end the match in the server and will share it with the rest of clients.
+    /// This method ends the match in the server and orders all clients to end the match
+    /// as well
     /// </summary>
     private void FinishGame_Server()
     {
@@ -95,7 +98,7 @@ public class GameManager : NetworkBehaviour
     }
 
     /// <summary>
-    /// This method will end the match in the client
+    /// This method ends the match in the client
     /// </summary>
     [ClientRpc]
     private void FinishGameClientRpc()
@@ -107,7 +110,7 @@ public class GameManager : NetworkBehaviour
     }
 
     /// <summary>
-    /// This method will start the countdown corroutine in the server
+    /// This method starts the countdown coroutine in the server
     /// </summary>
     private void StartInGameCountdown_Server()
     {
@@ -116,7 +119,7 @@ public class GameManager : NetworkBehaviour
     }
 
     /// <summary>
-    /// This method will stop the countdown corroutine in the server
+    /// This method stops the countdown coroutine in the server
     /// </summary>
     private void StopInGameCountdown_Server()
     {
@@ -124,7 +127,7 @@ public class GameManager : NetworkBehaviour
     }
 
     /// <summary>
-    /// This method will substract 1 to the countdown every second until someone stop it.
+    /// This coroutine decrements the countdown every second until someone stops it.
     /// </summary>
     private IEnumerator InGameCountdownCycle_Server()
     {
