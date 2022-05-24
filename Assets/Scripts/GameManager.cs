@@ -9,13 +9,14 @@ public class GameManager : NetworkBehaviour
 {
     #region Variables
     public event Action OnMatchFinished;
-    private const int MATCH_SECONDS = 105;
+    private const int MATCH_SECONDS = 5;
     private InGameCountDown inGameCountdown = null;
     private NetworkVariable<int> matchSecondsLeft;
     private VictoryChecker victoryChecker = null;
     [SerializeField] private List<VictoryConditionSO> victoryConditions = null;
     private NetworkVariable<GameState> currentGameState;
     private UIManager uiManager;
+    private MatchStatisticsUI matchStatisticsUI = null;
     #endregion
 
     #region Unity Event Functions
@@ -24,7 +25,7 @@ public class GameManager : NetworkBehaviour
         matchSecondsLeft = new NetworkVariable<int>();
         currentGameState = new NetworkVariable<GameState>(readPerm: NetworkVariableReadPermission.Everyone);
 
-        inGameCountdown = FindObjectOfType<InGameCountDown>();
+        inGameCountdown = FindObjectOfType<InGameCountDown>(true);
         Assert.IsNotNull(inGameCountdown, "[GameManager at Awake]: The inGameCountdown component is null");
 
         Assert.IsFalse(victoryConditions.Count == 0, "[GameManager at Awake]: The Victory conditions list is empty");
@@ -33,6 +34,9 @@ public class GameManager : NetworkBehaviour
         // Init UIManager
         uiManager = FindObjectOfType<UIManager>();
         Assert.IsNotNull(uiManager, "[GameManager at Awake]: The UIManager is null");
+
+        matchStatisticsUI = FindObjectOfType<MatchStatisticsUI>(true);
+        Assert.IsNotNull(uiManager, "[GameManager at Awake]: The MatchStatisticsUI is null");
     }
 
     private void Update()
@@ -107,6 +111,8 @@ public class GameManager : NetworkBehaviour
         matchSecondsLeft.OnValueChanged -= OnInGameCounterChanged;
         uiManager.ActivateEndMatch();
         Debug.Log("[Client] Match ended");
+        //Update statistics
+        matchStatisticsUI.UpdateMatchStatistics(MatchStatistics.GetInstance().GetStatistics());
     }
 
     /// <summary>

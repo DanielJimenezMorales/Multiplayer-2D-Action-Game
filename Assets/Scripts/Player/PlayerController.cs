@@ -53,8 +53,10 @@ public class PlayerController : NetworkBehaviour
         FlipSprite = new NetworkVariable<bool>();
     }
 
-    private void OnEnable()
+    public override void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
+        if (!IsLocalPlayer) return;
         handler.OnMove.AddListener(UpdatePlayerVisualsServerRpc);
         handler.OnJump.AddListener(PerformJumpServerRpc);
         handler.OnFire.AddListener(FireBulletServerRpc);
@@ -68,11 +70,13 @@ public class PlayerController : NetworkBehaviour
 
     private void DisablePlayerInputSystem()
     {
+        if (!IsLocalPlayer) return;
         handler.enabled = false;
     }
 
-    private void OnDisable()
+    public override void OnNetworkDespawn()
     {
+        if (!IsLocalPlayer) return;
         handler.OnMove.RemoveListener(UpdatePlayerVisualsServerRpc);
         handler.OnJump.RemoveListener(PerformJumpServerRpc);
         handler.OnFire.RemoveListener(FireBulletServerRpc);

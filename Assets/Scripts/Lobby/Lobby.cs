@@ -132,6 +132,12 @@ public class Lobby : NetworkBehaviour
 
         SpawnSystem.Instance.SpawnPlayersFromLobbyAtRandomSpawnPoint(GetPlayersLobbyData());
 
+        for (int i = 0; i < playersInLobby.Count; i++)
+        {
+            PlayerMatchStatisticsData initialPlayerStatisticsData = new PlayerMatchStatisticsData(playersInLobby[i].playerName, playersInLobby[i].playerId);
+            MatchStatistics.GetInstance().AddPlayerStatistics(initialPlayerStatisticsData);
+        }
+
         // Start game in Game Manager
         gameManager.StartGame_Server();
     }
