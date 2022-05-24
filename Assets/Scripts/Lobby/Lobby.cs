@@ -144,7 +144,7 @@ public class Lobby : NetworkBehaviour
 
     private void Init()
     {
-        Debug.Log("[Server] Initializing lobby...");
+        Debug.Log("Initializing lobby...");
 
         NetworkManager.Singleton.OnClientConnectedCallback += AddPlayerToLobby;
         NetworkManager.Singleton.OnClientDisconnectCallback += RemovePlayerFromLobby;

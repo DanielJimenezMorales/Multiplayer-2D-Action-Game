@@ -7,7 +7,7 @@ using System.Collections.Generic;
 /// Contains all the functionality of a weapon with
 /// aiming support and a cooldown timer
 /// </summary>
-public class Weapon : MonoBehaviour
+public class Weapon : NetworkBehaviour
 {
 
     #region Variables
@@ -24,12 +24,53 @@ public class Weapon : MonoBehaviour
 
     // input handler
     InputHandler handler;
-    public bool HasFired { get; set; }
-    public int WeaponCooldown { get; set; }
+
+    #endregion
+
+    #region Network Variables
+
+    NetworkVariable<bool> HasFired;
+    NetworkVariable<int> WeaponCooldown;
+
+    #endregion
+
+    #region Constants
+
+    const int RELOAD_TIME = 4;
+
+    #endregion
+
+    #region Getters and Setters
+
+    public void SetHasFired(bool hasFired)
+    {
+        HasFired.Value = hasFired;
+    }
+
+    public int GetWeaponCooldown()
+    {
+        return WeaponCooldown.Value;
+    }
 
     #endregion
 
     #region Unity Event Functions
+
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+
+        HasFired.OnValueChanged += OnHasFiredValueChanged;
+        WeaponCooldown.OnValueChanged += OnWeaponCooldownValueChanged;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+
+        HasFired.OnValueChanged -= OnHasFiredValueChanged;
+        WeaponCooldown.OnValueChanged -= OnWeaponCooldownValueChanged;
+    }
 
     private void Awake()
     {
@@ -37,14 +78,20 @@ public class Weapon : MonoBehaviour
         crossHairRenderer = crossHair.gameObject.GetComponent<SpriteRenderer>();
         weaponRenderer = weapon.gameObject.GetComponent<SpriteRenderer>();
         cooldownCounterRenderer = cooldownCounter.gameObject.GetComponent<SpriteRenderer>();
+
+        HasFired = new NetworkVariable<bool>();
+        WeaponCooldown = new NetworkVariable<int>();
     }
 
     private void Start()
     {
         crossHairRenderer.enabled = false;
         cooldownCounterRenderer.enabled = false;
-        HasFired = false;
-        WeaponCooldown = 0;
+        if (IsServer) // the server must reset the cooldown
+        {
+            HasFired.Value = false;
+            WeaponCooldown.Value = 0;
+        }
     }
 
     private void OnEnable()
@@ -59,19 +106,26 @@ public class Weapon : MonoBehaviour
 
     private void Update()
     {
-        if (HasFired) // when fired, enable the counter and reset the cooldown timer
+        if (HasFired.Value) // when fired, the server enables the counter and resets the cooldown timer
         {
-            HasFired = false;
-            cooldownCounterRenderer.enabled = true;
-            WeaponCooldown = 2;
-            StartCoroutine(WeaponCooldownDepletion());
+            if (IsServer)
+            {
+                HasFired.Value = false;
+                WeaponCooldown.Value = RELOAD_TIME - 1;
+                StartCoroutine(WeaponCooldownDepletion());
+            }
         }
         else
         {
-            if (WeaponCooldown <= 0) // the cooldown has ended
+            if (WeaponCooldown.Value <= 0)  // the cooldown has ended, the countdown must be hidden
+            {
                 cooldownCounterRenderer.enabled = false;
-            else // the cooldown is depleting
-                cooldownCounterRenderer.sprite = numberSprite[WeaponCooldown - 1];
+            }
+            else // the cooldown is depleting, the countdown must be shown
+            {
+                cooldownCounterRenderer.enabled = true;
+                cooldownCounterRenderer.sprite = numberSprite[WeaponCooldown.Value - 1];
+            }
         }
     }
 
@@ -121,19 +175,33 @@ public class Weapon : MonoBehaviour
 
     #endregion
 
-    #region Coroutines
+    #region Netcode Related Methods
 
-    /// <summary>
-    /// Resets the weapon cooldown and progressively depletes it
-    /// </summary>
-    private IEnumerator WeaponCooldownDepletion()
+    void OnHasFiredValueChanged(bool previous, bool current)
     {
-        yield return new WaitForSeconds(1f);
-        WeaponCooldown--;
-        yield return new WaitForSeconds(1f);
-        WeaponCooldown--;
+        HasFired.Value = current;
+    }
+
+    void OnWeaponCooldownValueChanged(int previous, int current)
+    {
+        WeaponCooldown.Value = current;
     }
 
     #endregion
 
+    #region Coroutines
+
+    /// <summary>
+    /// Depletes the weapon cooldown
+    /// </summary>
+    private IEnumerator WeaponCooldownDepletion()
+    {
+        while (WeaponCooldown.Value > 0)
+        {
+            yield return new WaitForSeconds(1f);
+            WeaponCooldown.Value--;
+        }
+    }
+
+    #endregion
 }
