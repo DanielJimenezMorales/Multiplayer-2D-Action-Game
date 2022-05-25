@@ -45,13 +45,11 @@ public class Bullet : NetworkBehaviour
                 ulong otherId = other.gameObject.GetComponent<NetworkObject>().OwnerClientId;
                 if (otherId != ShooterId.Value)
                 {
-                    Debug.Log("Player " + ShooterId.Value + " hit player " + otherId);
-                    HitPlayer(other.gameObject.GetComponent<Player>());
+                    HitPlayer(other.gameObject.GetComponent<Player>(), ShooterId.Value);
                     DespawnBullet();
                 }
                 break;
             case 6: // despawn bullet
-                //Debug.Log("Bullet hit an obstacle");
                 DespawnBullet();
                 break;
             default:
@@ -69,10 +67,14 @@ public class Bullet : NetworkBehaviour
         GetComponent<NetworkObject>().Despawn();
     }
 
-    void HitPlayer(Player player)
+    /// <summary>
+    /// This method hits a player with a bullet from a particular shooter
+    /// </summary>
+    /// <param name="player">A reference to the player who has been hit</param>
+    /// <param name="shooter">The player who shot the bullet</param>
+    void HitPlayer(Player playerHit, ulong shooter)
     {
-        if (player.Health.Value > 0)
-            player.Health.Value--;
+        playerHit.ReceiveHitFrom(shooter);
     }
 
     #endregion

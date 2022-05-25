@@ -32,7 +32,7 @@ public struct PlayerMatchStatisticsData : INetworkSerializable, IEquatable<Playe
         }
         else
         {
-            return kills / deaths;
+            return (float) kills / deaths;
         }
     }
 

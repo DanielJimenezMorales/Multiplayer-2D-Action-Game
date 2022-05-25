@@ -22,7 +22,7 @@ public class PlayerStatisticsRowUI : MonoBehaviour
         nameTextComponent.text = name;
         killsTextComponent.text = kills.ToString();
         deathsTextComponent.text = deaths.ToString();
-        kdTextComponent.text = kd.ToString();
+        kdTextComponent.text = kd.ToString("0.00");
         pingTextComponent.text = ping.ToString();
         localPlayerIndicator.SetActive(isLocalPlayer);
     }

@@ -52,6 +52,17 @@ public class SpawnSystem : MonoBehaviour
     }
 
     /// <summary>
+    /// Respawn a given player at a random spawn point
+    /// </summary>
+    /// <param name="player"></param>
+    public void RespawnPlayer(Player player)
+    {
+        int spawnPointIndex = GetRandomSpawnPointIndex(); // pick a random index
+        SpawnPoint selectedSpawn = spawns[spawnPointIndex];
+        player.transform.position = selectedSpawn.transform.position; // teleport player to new spawn position
+    }
+
+    /// <summary>
     /// Spawns a player owned by clientId at position
     /// </summary>
     /// <param name="clientId">The client who owns the player</param>

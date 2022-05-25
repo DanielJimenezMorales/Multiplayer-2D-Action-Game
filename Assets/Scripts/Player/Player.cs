@@ -2,6 +2,7 @@ using UnityEngine;
 using Cinemachine;
 using Unity.Netcode;
 using UnityEngine.Assertions;
+using System;
 
 public class Player : NetworkBehaviour
 {
@@ -52,7 +53,7 @@ public class Player : NetworkBehaviour
             return;
 
         healthIndicator = FindObjectOfType<PlayerHealthIndicator>();
-        Assert.IsNotNull(healthIndicator, "[Player at NetworkSpawn]: The playerHealthIndicator component is null");
+        Assert.IsNotNull(healthIndicator, "[Player at NetworkSpawn]: The PlayerHealthIndicator component is null");
     }
 
     private void Update()
@@ -60,8 +61,14 @@ public class Player : NetworkBehaviour
         if (!IsServer)
             return;
 
-        if (Health.Value <= 0) // if health drops to zero the player should be respawned
-            Alive.Value = false;
+        /*
+        // update player ping
+        int ping = NetworkTransport.GetCurrentRtt(OwnerClientId);
+        StatisticsManager.Instance.UpdatePing(OwnerClientId, ping);
+        */
+
+        if (Health.Value <= 0 && Alive.Value) // if health drops to zero the player should be respawned
+            RespawnPlayer();
     }
 
     #endregion
@@ -98,6 +105,40 @@ public class Player : NetworkBehaviour
 
     #endregion
 
+    #region Methods
+
+
+    /// <summary>
+    /// This method decrements player health and changes statistics if health drops to zero
+    /// </summary>
+    /// <param name="shooter">Player who shot this player</param>
+    public void ReceiveHitFrom(ulong shooter)
+    {
+        Debug.Log("Player " + shooter + " hit " + OwnerClientId);
+        Health.Value--;
+
+        if (Health.Value <= 0 && Alive.Value)
+        {
+            Debug.Log("Player " + shooter + " killed " + OwnerClientId);
+            // update statistics if player dies
+            StatisticsManager.Instance.AddKillDeathToStatistics(shooter, OwnerClientId);
+        } 
+    }
+
+    /// <summary>
+    /// This method respawns a player at a new position with maximum health
+    /// </summary>
+    private void RespawnPlayer()
+    {
+        Debug.Log("Respawning player " + OwnerClientId + "...");
+        Alive.Value = false;
+        SpawnSystem.Instance.RespawnPlayer(this); // teleport the player to a new location
+        Health.Value = MAX_HEALTH; // restore health
+        Alive.Value = true;
+    }
+
+    #endregion
+
     #region RPC
 
     #region ServerRPC
@@ -106,13 +147,6 @@ public class Player : NetworkBehaviour
     public void UpdatePlayerStateServerRpc(PlayerState state)
     {
         State.Value = state;
-    }
-
-    [ServerRpc]
-    public void UpdatePlayerHealthServerRpc(int health)
-    {
-        if (health > 0)
-            Health.Value = health;
     }
 
     #endregion
