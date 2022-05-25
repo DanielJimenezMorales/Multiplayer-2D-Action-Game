@@ -36,7 +36,7 @@ public class Weapon : NetworkBehaviour
 
     #region Constants
 
-    const int RELOAD_TIME = 4;
+    const int RELOAD_TIME = 3;
 
     #endregion
 
