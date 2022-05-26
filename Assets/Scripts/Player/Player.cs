@@ -3,6 +3,7 @@ using Cinemachine;
 using Unity.Netcode;
 using UnityEngine.Assertions;
 using System;
+using Unity.Netcode.Transports.UTP;
 
 public class Player : NetworkBehaviour
 {
@@ -61,11 +62,10 @@ public class Player : NetworkBehaviour
         if (!IsServer)
             return;
 
-        /*
         // update player ping
-        int ping = NetworkTransport.GetCurrentRtt(OwnerClientId);
+        UnityTransport utp = NetworkManager.Singleton.GetComponent<UnityTransport>();
+        int ping = (int) utp.GetCurrentRtt(OwnerClientId);
         StatisticsManager.Instance.UpdatePing(OwnerClientId, ping);
-        */
 
         if (Health.Value <= 0 && Alive.Value) // if health drops to zero the player should be respawned
             RespawnPlayer();
