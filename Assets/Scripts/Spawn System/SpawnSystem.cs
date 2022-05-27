@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.Assertions;
 
 /// <summary>
 /// This class handles the player and object spawning in the game.
@@ -13,6 +14,7 @@ public class SpawnSystem : MonoBehaviour
 
     [SerializeField]
     private GameObject playerPrefab = null;
+    [SerializeField] private PlayerClassSO[] possiblePlayerClasses = null;
 
     // list of spawn points available on the map
     private List<SpawnPoint> spawns = new List<SpawnPoint>();
@@ -45,7 +47,7 @@ public class SpawnSystem : MonoBehaviour
             SpawnPoint selectedSpawn = spawns[spawnPointIndex];
             selectedSpawn.Available = false; // set the selected spawn to unavailable
             // spawn player at spawn point
-            GameObject player = SpawnPlayer(playersLobbyData[i].playerId, selectedSpawn.transform.position);
+            GameObject player = SpawnPlayer(playersLobbyData[i].playerId, selectedSpawn.transform.position, playersLobbyData[i].classType);
             // set player name
             player.GetComponentInChildren<PlayerNameUI>().SetNameServer(playersLobbyData[i].playerName.ToString());
         }
@@ -67,11 +69,33 @@ public class SpawnSystem : MonoBehaviour
     /// </summary>
     /// <param name="clientId">The client who owns the player</param>
     /// <param name="position">The spawning position</param>
-    private GameObject SpawnPlayer(ulong clientId, Vector3 position)
+    private GameObject SpawnPlayer(ulong clientId, Vector3 position, PlayerClassType classType)
     {
         var player = Instantiate(playerPrefab, position, Quaternion.identity);
+
+        Player playerComponent = player.GetComponent<Player>();
+        Assert.IsNotNull(playerComponent, "[SpawnSystem at SpawnPlayer]: The Player component is null");
+
+        PlayerClassSO playerClass = GetPlayerClassFromType(classType);
+        Assert.IsNotNull(playerClass, "[SpawnSystem at SpawnPlayer]: The playerClass could not be found");
+
+        playerComponent.SetPlayerClass(playerClass);
+
         player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
         return player;
+    }
+
+    private PlayerClassSO GetPlayerClassFromType(PlayerClassType type)
+    {
+        for (int i = 0; i < possiblePlayerClasses.Length; i++)
+        {
+            if(possiblePlayerClasses[i].GetClassType().CompareTo(type) == 0)
+            {
+                return possiblePlayerClasses[i];
+            }
+        }
+
+        return null;
     }
 
     /// <summary>

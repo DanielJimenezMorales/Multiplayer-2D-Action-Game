@@ -306,8 +306,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   State:
     m_InternalValue: 0
+  classType:
+    m_InternalValue: 0
+  Alive:
+    m_InternalValue: 0
   Health:
     m_InternalValue: 0
+  maxHealth:
+    m_InternalValue: 0
+  playerController: {fileID: 5644749167613886764}
 --- !u!114 &169404036177825696
 MonoBehaviour:
   m_ObjectHideFlags: 0

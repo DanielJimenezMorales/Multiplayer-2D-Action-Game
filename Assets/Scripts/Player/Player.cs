@@ -8,22 +8,18 @@ using Unity.Netcode.Transports.UTP;
 public class Player : NetworkBehaviour
 {
     #region Network Variables
-
     public NetworkVariable<PlayerState> State;
+    public NetworkVariable<PlayerClassType> classType;
     public NetworkVariable<bool> Alive;
     public NetworkVariable<int> Health;
+    public NetworkVariable<int> maxHealth;
 
     #endregion
 
-    #region Private Variables
-
+    #region Variables
+    [SerializeField] private PlayerController playerController = null;
+    private PlayerClassSO currentPlayerClass = null;
     PlayerHealthIndicator healthIndicator;
-
-    #endregion
-
-    #region Constants
-
-    const int MAX_HEALTH = 6;
 
     #endregion
 
@@ -34,18 +30,32 @@ public class Player : NetworkBehaviour
         base.OnNetworkSpawn();
 
         ConfigurePlayer(OwnerClientId);
+        classType = new NetworkVariable<PlayerClassType>();
         State = new NetworkVariable<PlayerState>();
-        Health = new NetworkVariable<int>(MAX_HEALTH);
+        maxHealth = new NetworkVariable<int>();
+        Health = new NetworkVariable<int>();
         Alive = new NetworkVariable<bool>(true);
 
         State.OnValueChanged += OnPlayerStateValueChanged;
         Health.OnValueChanged += OnPlayerHealthValueChanged;
+
+        Debug.Log("Paso 2");
+        if(IsLocalPlayer)
+        {
+            ConfigurePlayerClassVariablesServerRpc();
+        }
     }
 
     public override void OnNetworkDespawn()
     {
         State.OnValueChanged -= OnPlayerStateValueChanged;
         Health.OnValueChanged -= OnPlayerHealthValueChanged;
+    }
+
+    public void SetPlayerClass(PlayerClassSO newClass)
+    {
+        Debug.Log("Paso 1");
+        currentPlayerClass = newClass;
     }
 
     private void Start()
@@ -59,6 +69,7 @@ public class Player : NetworkBehaviour
 
     private void Update()
     {
+        Debug.Log(classType.Value);
         if (!IsServer)
             return;
 
@@ -133,7 +144,7 @@ public class Player : NetworkBehaviour
         Debug.Log("Respawning player " + OwnerClientId + "...");
         Alive.Value = false;
         SpawnSystem.Instance.RespawnPlayer(this); // teleport the player to a new location
-        Health.Value = MAX_HEALTH; // restore health
+        Health.Value = maxHealth.Value; // restore health
         Alive.Value = true;
     }
 
@@ -147,6 +158,17 @@ public class Player : NetworkBehaviour
     public void UpdatePlayerStateServerRpc(PlayerState state)
     {
         State.Value = state;
+    }
+
+    [ServerRpc]
+    private void ConfigurePlayerClassVariablesServerRpc()
+    {
+        Assert.IsNotNull(currentPlayerClass, "[Player at ConfigurePlayerClassVariables]: The currentPlayerClass is null");
+        classType.Value = currentPlayerClass.GetClassType();
+        maxHealth.Value = currentPlayerClass.GetMaxHealth();
+        Health.Value = maxHealth.Value;
+
+        playerController.ConfigurePlayerClassVariables(currentPlayerClass);
     }
 
     #endregion

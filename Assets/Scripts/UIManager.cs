@@ -34,6 +34,9 @@ public class UIManager : MonoBehaviour
 
     [Header("Name Selection")]
     [SerializeField] private GameObject nameSelection;
+
+    [Header("PlayerClass Selection")]
+    [SerializeField] private GameObject playerClassSelection;
     #endregion
 
     #region Unity Event Functions
@@ -60,6 +63,7 @@ public class UIManager : MonoBehaviour
         lobby.SetActive(false);
         endMatch.SetActive(false);
         nameSelection.SetActive(false);
+        playerClassSelection.SetActive(false);
     }
 
     public void ActivateInGameHUD()
@@ -69,6 +73,7 @@ public class UIManager : MonoBehaviour
         lobby.SetActive(false);
         endMatch.SetActive(false);
         nameSelection.SetActive(false);
+        playerClassSelection.SetActive(false);
     }
 
     public void ActivateLobby()
@@ -78,6 +83,7 @@ public class UIManager : MonoBehaviour
         inGameHUD.SetActive(false);
         endMatch.SetActive(false);
         nameSelection.SetActive(false);
+        playerClassSelection.SetActive(false);
     }
 
     public void ActivateEndMatch()
@@ -87,11 +93,23 @@ public class UIManager : MonoBehaviour
         mainMenu.SetActive(false);
         inGameHUD.SetActive(false);
         nameSelection.SetActive(false);
+        playerClassSelection.SetActive(false);
     }
 
     public void ActivateNameSelection()
     {
         nameSelection.SetActive(true);
+        endMatch.SetActive(false);
+        lobby.SetActive(false);
+        mainMenu.SetActive(false);
+        inGameHUD.SetActive(false);
+        playerClassSelection.SetActive(false);
+    }
+
+    public void ActivatePlayerClassSelection()
+    {
+        playerClassSelection.SetActive(true);
+        nameSelection.SetActive(false);
         endMatch.SetActive(false);
         lobby.SetActive(false);
         mainMenu.SetActive(false);

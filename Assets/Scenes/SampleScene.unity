@@ -320,6 +320,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 504089642}
     m_Modifications:
+    - target: {fileID: 6525209260060005050, guid: bc3ae821301b64e4cb2bb65b9e9a71ad, type: 3}
+      propertyPath: possiblePlayerClasses.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6525209260060005050, guid: bc3ae821301b64e4cb2bb65b9e9a71ad, type: 3}
+      propertyPath: possiblePlayerClasses.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 8eda4aa4823374d41bc1af1bea703744, type: 2}
+    - target: {fileID: 6525209260060005050, guid: bc3ae821301b64e4cb2bb65b9e9a71ad, type: 3}
+      propertyPath: possiblePlayerClasses.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: cad8a1a9dcc2e0e43bbd330ac99742a2, type: 2}
     - target: {fileID: 6525209260060005051, guid: bc3ae821301b64e4cb2bb65b9e9a71ad, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -1847,6 +1859,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2064087090}
     - target: {fileID: 1332957947535845843, guid: 24b3e92d40fdae54088fb6f13ef5342c, type: 3}
+      propertyPath: playerClassSelection
+      value: 
+      objectReference: {fileID: 1737133369708097607}
+    - target: {fileID: 1332957947535845843, guid: 24b3e92d40fdae54088fb6f13ef5342c, type: 3}
       propertyPath: heartsUI.Array.data[0]
       value: 
       objectReference: {fileID: 10355778}
@@ -2576,6 +2592,11 @@ PrefabInstance:
 --- !u!1 &1737133369708097606 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2249348246577576656, guid: ef5e6e7b389e41c49a739316342228b8, type: 3}
+  m_PrefabInstance: {fileID: 1737133369708097605}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1737133369708097607 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7144262774741890111, guid: ef5e6e7b389e41c49a739316342228b8, type: 3}
   m_PrefabInstance: {fileID: 1737133369708097605}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3053655701385137534
