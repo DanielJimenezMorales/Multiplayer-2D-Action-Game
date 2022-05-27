@@ -318,7 +318,7 @@ public class Lobby : NetworkBehaviour
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    [ServerRpc(RequireOwnership = false)] //Adding (RequireOwnership = false) because the lobby is owned by the server, not by any players
     public void SetPlayerNameServerRpc(ulong clientID, string newName)
     {
         int index = 0;
@@ -335,5 +335,24 @@ public class Lobby : NetworkBehaviour
         modifiedPlayer.playerName = newName;
         playersInLobby[index] = modifiedPlayer;
         UpdateLobbyPlayerList();
+    }
+
+    [ServerRpc(RequireOwnership = false)] //Adding (RequireOwnership = false) because the lobby is owned by the server, not by any players
+    public void SetPlayerClassTypeServerRpc(ulong clientID, PlayerClassType type)
+    {
+        Debug.Log(type);
+        int index = 0;
+        foreach (PlayerLobbyData playerLobbyData in playersInLobby)
+        {
+            if (playerLobbyData.playerId == clientID)
+            {
+                break;
+            }
+            index++;
+        }
+
+        PlayerLobbyData modifiedPlayer = playersInLobby[index];
+        modifiedPlayer.classType = type;
+        playersInLobby[index] = modifiedPlayer;
     }
 }

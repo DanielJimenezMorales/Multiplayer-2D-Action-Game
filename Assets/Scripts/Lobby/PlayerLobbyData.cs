@@ -15,12 +15,14 @@ public struct PlayerLobbyData : INetworkSerializable, IEquatable<PlayerLobbyData
     #region Variables
     public FixedString32Bytes playerName; // Using this type instead of string because with the normal string the NetworkList declaration of this struct fails.
     public ulong playerId;
+    public PlayerClassType classType;
     #endregion
 
     public PlayerLobbyData(FixedString32Bytes playerName, ulong playerId)
     {
         this.playerName = playerName;
         this.playerId = playerId;
+        classType = PlayerClassType.AgilePlayer;
     }
 
     /// <summary>
@@ -32,11 +34,12 @@ public struct PlayerLobbyData : INetworkSerializable, IEquatable<PlayerLobbyData
     {
         serializer.SerializeValue(ref playerName);
         serializer.SerializeValue(ref playerId);
+        serializer.SerializeValue(ref classType);
     }
 
     public bool Equals(PlayerLobbyData other)
     {
-        if (playerName == other.playerName && playerId == other.playerId) return true;
+        if (playerName == other.playerName && playerId == other.playerId && classType == other.classType) return true;
 
         return false;
     }

@@ -8,10 +8,9 @@ using System;
 [RequireComponent(typeof(InputHandler))]
 public class PlayerController : NetworkBehaviour
 {
-
     #region Variables
     private GameManager gameManager = null;
-    readonly float speed = 3.4f;
+    private NetworkVariable<float> speed;
     readonly float jumpHeight = 6.5f;
     readonly float gravity = 1.5f;
     readonly int maxJumps = 2;
@@ -32,7 +31,7 @@ public class PlayerController : NetworkBehaviour
     // Firing system variables
     [SerializeField]
     private GameObject bulletPrefab = null;
-    private float bulletSpeed = 3f;
+    private NetworkVariable<float> bulletSpeed;
     private Weapon weapon;
 
     #endregion
@@ -51,11 +50,14 @@ public class PlayerController : NetworkBehaviour
         weapon = GetComponent<Weapon>();
 
         FlipSprite = new NetworkVariable<bool>();
+        speed = new NetworkVariable<float>();
+        bulletSpeed = new NetworkVariable<float>();
     }
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+
         if (!IsLocalPlayer) return;
         handler.OnMove.AddListener(UpdatePlayerVisualsServerRpc);
         handler.OnJump.AddListener(PerformJumpServerRpc);
@@ -111,6 +113,12 @@ public class PlayerController : NetworkBehaviour
 
     #region ServerRPC
 
+    public void ConfigurePlayerClassVariables(PlayerClassSO playerClass)
+    {
+        speed.Value = playerClass.GetMovementSpeed();
+        bulletSpeed.Value = playerClass.GetBulletsSpeed();
+    }
+
     [ServerRpc]
     void UpdatePlayerVisualsServerRpc(Vector2 input)
     {
@@ -164,7 +172,7 @@ public class PlayerController : NetworkBehaviour
             GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
             // Change instance's rigidbody velocity
             Vector2 direction = (input - (Vector2)transform.position).normalized;
-            bullet.GetComponent<Rigidbody2D>().velocity = direction * bulletSpeed;
+            bullet.GetComponent<Rigidbody2D>().velocity = direction * bulletSpeed.Value;
             // Spawn the bullet
             bullet.GetComponent<NetworkObject>().Spawn();
             // Change bullet shooter id
@@ -182,7 +190,7 @@ public class PlayerController : NetworkBehaviour
 
         if (player.State.Value != PlayerState.Hooked)
         {
-            rb.velocity = new Vector2(input.x * speed, rb.velocity.y);
+            rb.velocity = new Vector2(input.x * speed.Value, rb.velocity.y);
         }
     }
 

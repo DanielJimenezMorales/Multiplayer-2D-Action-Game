@@ -28,7 +28,7 @@ public class InsertNameUIButton : MonoBehaviour
         string name = inputField.text;
         lobby = FindObjectOfType<Lobby>();
         Assert.IsNotNull(lobby, "[InsertNameUIButton at SendNameInformation]: The Lobby component is null");
-        uiManager.ActivateLobby();
+        uiManager.ActivatePlayerClassSelection();
         lobby.SetPlayerNameServerRpc(NetworkManager.Singleton.LocalClientId, name);
     }
 }
