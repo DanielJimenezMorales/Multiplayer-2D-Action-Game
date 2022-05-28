@@ -14,7 +14,7 @@ public class Lobby : NetworkBehaviour
 {
     #region Variables
     private const int MINIMUM_PLAYERS_IN_LOBBY = 1; // Minimum number of players required to start
-    private const int LOBBY_COUNTDOWN_TIME = 10; // Whenever the players reach MINIMUM_PLAYERS_IN_LOBBY, how many seconds has the countdown before starting the match?
+    private const int LOBBY_COUNTDOWN_TIME = 20; // Whenever the players reach MINIMUM_PLAYERS_IN_LOBBY, how many seconds has the countdown before starting the match?
 
     [SerializeField] private int lobbyCapacity = 5; // Which is the maximum players that the lobby is able to handle?
     private NetworkList<PlayerLobbyData> playersInLobby;
@@ -138,7 +138,7 @@ public class Lobby : NetworkBehaviour
             MatchStatistics.GetInstance().AddPlayerStatistics(initialPlayerStatisticsData);
         }
 
-        // Start game in Game Manager
+        // Start game in GameManager
         gameManager.StartGame_Server();
     }
 
@@ -174,7 +174,7 @@ public class Lobby : NetworkBehaviour
     /// <param name="clientId"></param>
     private void AddPlayerToLobby(ulong clientId)
     {
-        if(playersInLobby.Count == lobbyCapacity)
+        if(playersInLobby.Count == lobbyCapacity) // if the limit of players in lobby is reached, disconnect the client
         {
             NetworkManager.Singleton.DisconnectClient(clientId);
             return;
@@ -206,7 +206,7 @@ public class Lobby : NetworkBehaviour
         }
         else if(IsClient)
         {
-            if(playersInLobby.Count == lobbyCapacity)
+            if(playersInLobby.Count == lobbyCapacity) // if lobby capacity is reached, activate LobbyFull screen
             {
                 uiManager.ActivateLobbyFull();
             }
@@ -331,7 +331,7 @@ public class Lobby : NetworkBehaviour
         }
     }
 
-    [ServerRpc(RequireOwnership = false)] //Adding (RequireOwnership = false) because the lobby is owned by the server, not by any players
+    [ServerRpc(RequireOwnership = false)] // Adding (RequireOwnership = false) because the lobby is owned by the server, not by any players
     public void SetPlayerNameServerRpc(ulong clientID, string newName)
     {
         int index = 0;
@@ -350,10 +350,10 @@ public class Lobby : NetworkBehaviour
         UpdateLobbyPlayerList();
     }
 
-    [ServerRpc(RequireOwnership = false)] //Adding (RequireOwnership = false) because the lobby is owned by the server, not by any players
+    [ServerRpc(RequireOwnership = false)] // Adding (RequireOwnership = false) because the lobby is owned by the server, not by any players
     public void SetPlayerClassTypeServerRpc(ulong clientID, PlayerClassType type)
     {
-        Debug.Log(type);
+        Debug.Log("Player " + clientID + " has selected the class " + type);
         int index = 0;
         foreach (PlayerLobbyData playerLobbyData in playersInLobby)
         {

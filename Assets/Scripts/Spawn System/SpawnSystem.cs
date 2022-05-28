@@ -12,8 +12,7 @@ public class SpawnSystem : MonoBehaviour
 {
     public static SpawnSystem Instance;
 
-    [SerializeField]
-    private GameObject playerPrefab = null;
+    [SerializeField] private GameObject playerPrefab = null;
     [SerializeField] private PlayerClassSO[] possiblePlayerClasses = null;
 
     // list of spawn points available on the map

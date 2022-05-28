@@ -52,6 +52,7 @@ public class ExitFromLobbyUIButton : MonoBehaviour
         {
             NetworkManager.Singleton.Shutdown(); // disconnect the client
             uiManager.ActivateMainMenu(); // goes back to the menu
+            UnityEngine.SceneManagement.SceneManager.LoadScene("SampleScene"); // reloads the scene
         }
     }
 }

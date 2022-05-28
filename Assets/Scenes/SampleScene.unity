@@ -1136,17 +1136,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8051690431131584831, guid: 5aeaa68002650194f8dad71ffc014239, type: 3}
   m_PrefabInstance: {fileID: 199050862}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1242061510 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1737133370949102211, guid: ef5e6e7b389e41c49a739316342228b8, type: 3}
-  m_PrefabInstance: {fileID: 1737133369708097605}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1279191221 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2503596978575127790, guid: ef5e6e7b389e41c49a739316342228b8, type: 3}
@@ -1559,7 +1548,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4880130966508990850, guid: 49a5306f65e329e4eb9d2fa10da832b7, type: 3}
       propertyPath: lobbyCapacity
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4880130966508990851, guid: 49a5306f65e329e4eb9d2fa10da832b7, type: 3}
       propertyPath: m_RootOrder
@@ -1856,7 +1845,7 @@ PrefabInstance:
     - target: {fileID: 1332957947535845843, guid: 24b3e92d40fdae54088fb6f13ef5342c, type: 3}
       propertyPath: buttonHost
       value: 
-      objectReference: {fileID: 1242061510}
+      objectReference: {fileID: 0}
     - target: {fileID: 1332957947535845843, guid: 24b3e92d40fdae54088fb6f13ef5342c, type: 3}
       propertyPath: buttonClient
       value: 

@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "ScriptableObjects/Victory Conditions/Maximum Kills", fileName = "MaximumKillsVictoryCondition")]
 public class MaximumKillsVictoryConditionSO : VictoryConditionSO
 {
-    [SerializeField] private int maxNumberOfKills = 10;
+    [SerializeField] private int maxNumberOfKills = 3;
     public override bool CheckCondition(int matchSecondsLeft)
     {
         IReadOnlyList<PlayerMatchStatisticsData> statisticsData = MatchStatistics.GetInstance().GetStatistics();
