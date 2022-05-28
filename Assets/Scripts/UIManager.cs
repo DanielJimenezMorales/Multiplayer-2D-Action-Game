@@ -37,6 +37,9 @@ public class UIManager : MonoBehaviour
 
     [Header("PlayerClass Selection")]
     [SerializeField] private GameObject playerClassSelection;
+
+    [Header("Lobby full")]
+    [SerializeField] private GameObject lobbyFull;
     #endregion
 
     #region Unity Event Functions
@@ -64,6 +67,7 @@ public class UIManager : MonoBehaviour
         endMatch.SetActive(false);
         nameSelection.SetActive(false);
         playerClassSelection.SetActive(false);
+        lobbyFull.SetActive(false);
     }
 
     public void ActivateInGameHUD()
@@ -74,6 +78,7 @@ public class UIManager : MonoBehaviour
         endMatch.SetActive(false);
         nameSelection.SetActive(false);
         playerClassSelection.SetActive(false);
+        lobbyFull.SetActive(false);
     }
 
     public void ActivateLobby()
@@ -84,6 +89,7 @@ public class UIManager : MonoBehaviour
         endMatch.SetActive(false);
         nameSelection.SetActive(false);
         playerClassSelection.SetActive(false);
+        lobbyFull.SetActive(false);
     }
 
     public void ActivateEndMatch()
@@ -94,6 +100,7 @@ public class UIManager : MonoBehaviour
         inGameHUD.SetActive(false);
         nameSelection.SetActive(false);
         playerClassSelection.SetActive(false);
+        lobbyFull.SetActive(false);
     }
 
     public void ActivateNameSelection()
@@ -104,11 +111,24 @@ public class UIManager : MonoBehaviour
         mainMenu.SetActive(false);
         inGameHUD.SetActive(false);
         playerClassSelection.SetActive(false);
+        lobbyFull.SetActive(false);
     }
 
     public void ActivatePlayerClassSelection()
     {
         playerClassSelection.SetActive(true);
+        nameSelection.SetActive(false);
+        endMatch.SetActive(false);
+        lobby.SetActive(false);
+        mainMenu.SetActive(false);
+        inGameHUD.SetActive(false);
+        lobbyFull.SetActive(false);
+    }
+
+    public void ActivateLobbyFull()
+    {
+        lobbyFull.SetActive(true);
+        playerClassSelection.SetActive(false);
         nameSelection.SetActive(false);
         endMatch.SetActive(false);
         lobby.SetActive(false);

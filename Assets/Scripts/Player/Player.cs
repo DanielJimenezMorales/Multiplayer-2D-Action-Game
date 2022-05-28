@@ -160,6 +160,9 @@ public class Player : NetworkBehaviour
         State.Value = state;
     }
 
+    /// <summary>
+    /// This method updates the playerClass variables whenever a new class is set.
+    /// </summary>
     [ServerRpc]
     private void ConfigurePlayerClassVariablesServerRpc()
     {
