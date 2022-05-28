@@ -25,6 +25,8 @@ public class MatchStatisticsUI : MonoBehaviour
 
     public void UpdateMatchStatistics(IReadOnlyList<PlayerMatchStatisticsData> playersStatistics)
     {
+        playersStatistics = SortPlayersStatisticsByNumberOfKills(playersStatistics);
+
         for (int i = 0; i < rows.Count; i++)
         {
             if(i < playersStatistics.Count)
@@ -41,5 +43,33 @@ public class MatchStatisticsUI : MonoBehaviour
                 rows[i].gameObject.SetActive(false);
             }
         }
+    }
+
+    private IReadOnlyList<PlayerMatchStatisticsData> SortPlayersStatisticsByNumberOfKills(IReadOnlyList<PlayerMatchStatisticsData> playersStatistics)
+    {
+        List<PlayerMatchStatisticsData> sortedPlayerStatistics = new List<PlayerMatchStatisticsData>();
+        bool[] visitedPositions = new bool[playersStatistics.Count];
+
+        int numberOfKills = -1;
+        int index = 0;
+
+        for (int i = 0; i < playersStatistics.Count; i++)
+        {
+            for (int j = 0; j < playersStatistics.Count; j++)
+            {
+                if(numberOfKills < playersStatistics[j].kills && !visitedPositions[j])
+                {
+                    numberOfKills = playersStatistics[j].kills;
+                    index = j;
+                    visitedPositions[j] = true;
+                }
+            }
+
+            sortedPlayerStatistics.Add(playersStatistics[index]);
+            numberOfKills = -1;
+            index = 0;
+        }
+
+        return sortedPlayerStatistics;
     }
 }
