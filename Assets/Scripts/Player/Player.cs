@@ -9,10 +9,10 @@ public class Player : NetworkBehaviour
 {
     #region Network Variables
     public NetworkVariable<PlayerState> State;
-    public NetworkVariable<PlayerClassType> classType;
+    public NetworkVariable<PlayerClassType> ClassType;
     public NetworkVariable<bool> Alive;
     public NetworkVariable<int> Health;
-    public NetworkVariable<int> maxHealth;
+    public NetworkVariable<int> MaxHealth;
 
     #endregion
 
@@ -30,9 +30,9 @@ public class Player : NetworkBehaviour
         base.OnNetworkSpawn();
 
         ConfigurePlayer(OwnerClientId);
-        classType = new NetworkVariable<PlayerClassType>();
+        ClassType = new NetworkVariable<PlayerClassType>();
         State = new NetworkVariable<PlayerState>();
-        maxHealth = new NetworkVariable<int>();
+        MaxHealth = new NetworkVariable<int>();
         Health = new NetworkVariable<int>();
         Alive = new NetworkVariable<bool>(true);
 
@@ -69,7 +69,7 @@ public class Player : NetworkBehaviour
 
     private void Update()
     {
-        Debug.Log(classType.Value);
+        Debug.Log(ClassType.Value);
         if (!IsServer)
             return;
 
@@ -144,7 +144,7 @@ public class Player : NetworkBehaviour
         Debug.Log("Respawning player " + OwnerClientId + "...");
         Alive.Value = false;
         SpawnSystem.Instance.RespawnPlayer(this); // teleport the player to a new location
-        Health.Value = maxHealth.Value; // restore health
+        Health.Value = MaxHealth.Value; // restore health
         Alive.Value = true;
     }
 
@@ -161,15 +161,15 @@ public class Player : NetworkBehaviour
     }
 
     /// <summary>
-    /// This method updates the playerClass variables whenever a new class is set.
+    /// This method updates the PlayerClass variables whenever a new class is set.
     /// </summary>
     [ServerRpc]
     private void ConfigurePlayerClassVariablesServerRpc()
     {
         Assert.IsNotNull(currentPlayerClass, "[Player at ConfigurePlayerClassVariables]: The currentPlayerClass is null");
-        classType.Value = currentPlayerClass.GetClassType();
-        maxHealth.Value = currentPlayerClass.GetMaxHealth();
-        Health.Value = maxHealth.Value;
+        ClassType.Value = currentPlayerClass.GetClassType();
+        MaxHealth.Value = currentPlayerClass.GetMaxHealth();
+        Health.Value = MaxHealth.Value;
 
         playerController.ConfigurePlayerClassVariables(currentPlayerClass);
     }

@@ -21,7 +21,7 @@ public class PlayerSelectionUI : MonoBehaviour
     }
 
     /// <summary>
-    /// This method selects the type of playerclass that the player has chosen before sending the information to the server.
+    /// This method selects the type of PlayerClass that the player has chosen before sending the information to the server.
     /// </summary>
     /// <param name="newType"></param>
     public void SelectType(PlayerClassType newType)
@@ -30,7 +30,7 @@ public class PlayerSelectionUI : MonoBehaviour
     }
 
     /// <summary>
-    /// This method send the information related to the player selection to the server when the player choose a playerClass (Agile or heavy)
+    /// This method sends the information related to the player selection to the server when the player chooses a PlayerClass (Agile or Heavy)
     /// </summary>
     public void SendPlayerClassTypeInformation()
     {

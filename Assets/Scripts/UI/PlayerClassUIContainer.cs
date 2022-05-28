@@ -5,7 +5,7 @@ using UnityEngine.Assertions;
 using UnityEngine.UI;
 
 /// <summary>
-/// This class manages one playerclass container box inside of the playerClass selection screen.
+/// This class manages one PlayerClass container box inside of the PlayerClass selection screen.
 /// </summary>
 public class PlayerClassUIContainer : MonoBehaviour
 {
@@ -26,7 +26,8 @@ public class PlayerClassUIContainer : MonoBehaviour
     }
 
     /// <summary>
-    /// This method is called when the player clicks the select button of the container box. It will notify the playerClass selection screen that the selection has been made.
+    /// This method is called when the player clicks the select button of the container box. 
+    /// It will notify the PlayerClass selection screen that the selection has been made.
     /// </summary>
     private void OnSelectedPlayerClass()
     {

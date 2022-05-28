@@ -154,7 +154,6 @@ public class UIManager : MonoBehaviour
         }
         NetworkManager.Singleton.StartClient();
         ActivateNameSelection();
-        //ActivateLobby();
     }
 
     private void StartServer()

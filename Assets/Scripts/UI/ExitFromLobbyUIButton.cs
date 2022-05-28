@@ -6,6 +6,11 @@ using UnityEngine.Assertions;
 using UnityEngine.UI;
 using Unity.Netcode;
 
+/// <summary>
+/// This class handles the events that follow a BackToMenu button press by a client
+/// when the lobby is active. The client goes back to the menu after disconnecting
+/// (the server cannot disconnect)
+/// </summary>
 [RequireComponent(typeof(Button))]
 public class ExitFromLobbyUIButton : MonoBehaviour
 {
@@ -38,12 +43,15 @@ public class ExitFromLobbyUIButton : MonoBehaviour
     }
     #endregion
 
+    /// <summary>
+    /// Whenever the button is clicked by a client, the shutdown process starts
+    /// </summary>
     private void OnClickButton()
     {
         if (NetworkManager.Singleton.IsClient)
         {
-            NetworkManager.Singleton.Shutdown();
-            uiManager.ActivateMainMenu();
+            NetworkManager.Singleton.Shutdown(); // disconnect the client
+            uiManager.ActivateMainMenu(); // goes back to the menu
         }
     }
 }

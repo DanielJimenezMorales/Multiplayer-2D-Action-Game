@@ -4,7 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 
 /// <summary>
-/// This scriptable object contains the neccesary playerClass stats
+/// This scriptable object contains the neccesary PlayerClass stats
 /// </summary>
 [CreateAssetMenu(menuName = "ScriptableObjects/Player/Player Class Type", fileName = "XXXPlayerType")]
 public class PlayerClassSO : ScriptableObject, INetworkSerializable
