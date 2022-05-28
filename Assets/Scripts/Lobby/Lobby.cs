@@ -174,6 +174,12 @@ public class Lobby : NetworkBehaviour
     /// <param name="clientId"></param>
     private void AddPlayerToLobby(ulong clientId)
     {
+        if(playersInLobby.Count == lobbyCapacity)
+        {
+            NetworkManager.Singleton.DisconnectClient(clientId);
+            return;
+        }
+
         if(IsServer)
         {
             PlayerLobbyData playerLobbyData = new PlayerLobbyData("Jugador " + clientId.ToString(), clientId);
@@ -200,7 +206,14 @@ public class Lobby : NetworkBehaviour
         }
         else if(IsClient)
         {
-            uiManager.ActivateMainMenu();
+            if(playersInLobby.Count == lobbyCapacity)
+            {
+                uiManager.ActivateLobbyFull();
+            }
+            else
+            {
+                uiManager.ActivateMainMenu();
+            }
         }
     }
 

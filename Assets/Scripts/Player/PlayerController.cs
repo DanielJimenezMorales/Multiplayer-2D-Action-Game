@@ -113,6 +113,10 @@ public class PlayerController : NetworkBehaviour
 
     #region ServerRPC
 
+    /// <summary>
+    /// This method updates the playerClass variables whenever a new class is set.
+    /// </summary>
+    /// <param name="playerClass"></param>
     public void ConfigurePlayerClassVariables(PlayerClassSO playerClass)
     {
         speed.Value = playerClass.GetMovementSpeed();

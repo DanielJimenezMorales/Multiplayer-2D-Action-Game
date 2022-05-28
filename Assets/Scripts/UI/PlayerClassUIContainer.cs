@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
 
+/// <summary>
+/// This class manages one playerclass container box inside of the playerClass selection screen.
+/// </summary>
 public class PlayerClassUIContainer : MonoBehaviour
 {
     #region Variables
@@ -22,6 +25,9 @@ public class PlayerClassUIContainer : MonoBehaviour
         selectButton.onClick.RemoveListener(OnSelectedPlayerClass);
     }
 
+    /// <summary>
+    /// This method is called when the player clicks the select button of the container box. It will notify the playerClass selection screen that the selection has been made.
+    /// </summary>
     private void OnSelectedPlayerClass()
     {
         Assert.IsNotNull(playerSelectionUI, "[PlayerClassUIContainer at OnSelectedPlayerClass]: The player selection UI component is null");

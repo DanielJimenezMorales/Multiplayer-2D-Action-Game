@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
+/// <summary>
+/// This scriptable object contains the neccesary playerClass stats
+/// </summary>
 [CreateAssetMenu(menuName = "ScriptableObjects/Player/Player Class Type", fileName = "XXXPlayerType")]
 public class PlayerClassSO : ScriptableObject, INetworkSerializable
 {
@@ -19,6 +22,11 @@ public class PlayerClassSO : ScriptableObject, INetworkSerializable
     public float GetMovementSpeed() { return movementSpeed; }
     public float GetBulletsSpeed() { return bulletsSpeed; }
 
+    /// <summary>
+    /// It needs to be serialized because this scriptable object is sent through Rpc methods.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="serializer"></param>
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref classType);
