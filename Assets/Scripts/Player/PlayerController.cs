@@ -114,7 +114,7 @@ public class PlayerController : NetworkBehaviour
     #region ServerRPC
 
     /// <summary>
-    /// This method updates the playerClass variables whenever a new class is set.
+    /// This method updates the PlayerClass variables whenever a new class is selected.
     /// </summary>
     /// <param name="playerClass"></param>
     public void ConfigurePlayerClassVariables(PlayerClassSO playerClass)
@@ -147,6 +147,8 @@ public class PlayerController : NetworkBehaviour
     [ServerRpc]
     void PerformJumpServerRpc()
     {
+        // Check the collision instead of checking the player state
+        // to avoid triple jump glitch
         if (IsGrounded)
         {
             _jumpsLeft = maxJumps;
@@ -179,7 +181,7 @@ public class PlayerController : NetworkBehaviour
             bullet.GetComponent<Rigidbody2D>().velocity = direction * bulletSpeed.Value;
             // Spawn the bullet
             bullet.GetComponent<NetworkObject>().Spawn();
-            // Change bullet shooter id
+            // Change bullet's shooter id
             bullet.GetComponent<Bullet>().ShooterId.Value = OwnerClientId;
         }
     }

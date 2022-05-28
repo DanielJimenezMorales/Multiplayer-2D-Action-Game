@@ -16,7 +16,6 @@ public class UIManager : MonoBehaviour
 
     [Header("Main Menu")]
     [SerializeField] private GameObject mainMenu;
-    [SerializeField] private Button buttonHost;
     [SerializeField] private Button buttonClient;
     [SerializeField] private Button buttonServer;
     [SerializeField] private InputField inputFieldIP;
@@ -50,7 +49,6 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        buttonHost.onClick.AddListener(() => StartHost());
         buttonClient.onClick.AddListener(() => StartClient());
         buttonServer.onClick.AddListener(() => StartServer());
         ActivateMainMenu();
@@ -139,11 +137,14 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region Netcode Related Methods
+
+    /*
     private void StartHost()
     {
         NetworkManager.Singleton.StartHost();
         ActivateLobby();
     }
+    */
 
     private void StartClient()
     {

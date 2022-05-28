@@ -8,8 +8,9 @@ using Unity.Netcode;
 public class GameManager : NetworkBehaviour
 {
     #region Variables
+
     public event Action OnMatchFinished;
-    private const int MATCH_SECONDS = 40;
+    private const int MATCH_SECONDS = 60;
     private InGameCountDown inGameCountdown = null;
     private NetworkVariable<int> matchSecondsLeft;
     private VictoryChecker victoryChecker = null;
@@ -17,6 +18,7 @@ public class GameManager : NetworkBehaviour
     private NetworkVariable<GameState> currentGameState;
     private UIManager uiManager;
     private MatchStatisticsUI matchStatisticsUI = null;
+
     #endregion
 
     #region Unity Event Functions
@@ -43,7 +45,7 @@ public class GameManager : NetworkBehaviour
     {
         if(NetworkManager.Singleton.IsServer && currentGameState.Value.CompareTo(GameState.Match) == 0)
         {
-            //Update statistics
+            // Update statistics
             matchStatisticsUI.UpdateMatchStatistics(MatchStatistics.GetInstance().GetStatistics());
 
             bool isVictory = victoryChecker.CheckConditions(matchSecondsLeft.Value);

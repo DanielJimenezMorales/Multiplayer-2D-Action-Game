@@ -8,6 +8,7 @@ using Unity.Netcode.Transports.UTP;
 public class Player : NetworkBehaviour
 {
     #region Network Variables
+
     public NetworkVariable<PlayerState> State;
     public NetworkVariable<PlayerClassType> ClassType;
     public NetworkVariable<bool> Alive;
@@ -17,6 +18,7 @@ public class Player : NetworkBehaviour
     #endregion
 
     #region Variables
+
     [SerializeField] private PlayerController playerController = null;
     private PlayerClassSO currentPlayerClass = null;
     PlayerHealthIndicator healthIndicator;
@@ -39,7 +41,6 @@ public class Player : NetworkBehaviour
         State.OnValueChanged += OnPlayerStateValueChanged;
         Health.OnValueChanged += OnPlayerHealthValueChanged;
 
-        Debug.Log("Paso 2");
         if(IsLocalPlayer)
         {
             ConfigurePlayerClassVariablesServerRpc();
@@ -54,7 +55,6 @@ public class Player : NetworkBehaviour
 
     public void SetPlayerClass(PlayerClassSO newClass)
     {
-        Debug.Log("Paso 1");
         currentPlayerClass = newClass;
     }
 
@@ -69,7 +69,6 @@ public class Player : NetworkBehaviour
 
     private void Update()
     {
-        Debug.Log(ClassType.Value);
         if (!IsServer)
             return;
 
@@ -126,9 +125,9 @@ public class Player : NetworkBehaviour
     public void ReceiveHitFrom(ulong shooter)
     {
         Debug.Log("Player " + shooter + " hit " + OwnerClientId);
-        Health.Value--;
+        Health.Value--; // decrement player health
 
-        if (Health.Value <= 0 && Alive.Value)
+        if (Health.Value <= 0 && Alive.Value) // the player has been killed
         {
             Debug.Log("Player " + shooter + " killed " + OwnerClientId);
             // update statistics if player dies
@@ -141,7 +140,6 @@ public class Player : NetworkBehaviour
     /// </summary>
     private void RespawnPlayer()
     {
-        Debug.Log("Respawning player " + OwnerClientId + "...");
         Alive.Value = false;
         SpawnSystem.Instance.RespawnPlayer(this); // teleport the player to a new location
         Health.Value = MaxHealth.Value; // restore health
@@ -161,7 +159,7 @@ public class Player : NetworkBehaviour
     }
 
     /// <summary>
-    /// This method updates the PlayerClass variables whenever a new class is set.
+    /// This method updates the PlayerClass variables whenever a new class is selected.
     /// </summary>
     [ServerRpc]
     private void ConfigurePlayerClassVariablesServerRpc()
@@ -181,7 +179,7 @@ public class Player : NetworkBehaviour
     [ClientRpc]
     public void UpdatePlayerHealthClientRpc(int health, ClientRpcParams clientRpcParams = default)
     {
-        healthIndicator.UpdateLifeUI(health);
+        healthIndicator.UpdateLifeUI(health); // update the health indicator in client
     }
 
     #endregion
@@ -193,16 +191,13 @@ public class Player : NetworkBehaviour
     void OnPlayerStateValueChanged(PlayerState previous, PlayerState current)
     {
         State.Value = current;
-        //Debug.Log("Player state: " + previous + " -> " + current);
     }
 
     void OnPlayerHealthValueChanged(int previous, int current)
     {
         Health.Value = current;
-        //Debug.Log("Player " + OwnerClientId + 
-            //" health dropped from " + previous + " to " + current);
 
-        // only execute the client RPC on the owner of this object
+        // only execute the client Rpc in the owner of this object
         ClientRpcParams clientRpcParams = new ClientRpcParams
         {
             Send = new ClientRpcSendParams
