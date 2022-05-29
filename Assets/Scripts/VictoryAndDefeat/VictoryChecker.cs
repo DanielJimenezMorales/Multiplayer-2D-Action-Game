@@ -23,7 +23,7 @@ public class VictoryChecker
     /// <returns></returns>
     public bool CheckConditions(int matchSecondsLeft)
     {
-        foreach(VictoryConditionSO condition in victoryConditions)
+        foreach (VictoryConditionSO condition in victoryConditions)
         {
             bool conditionAchieved = condition.CheckCondition(matchSecondsLeft);
             if(conditionAchieved)
