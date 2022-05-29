@@ -13,7 +13,7 @@ using Unity.Collections;
 public class Lobby : NetworkBehaviour
 {
     #region Variables
-    private const int MINIMUM_PLAYERS_IN_LOBBY = 1; // Minimum number of players required to start
+    private const int MINIMUM_PLAYERS_IN_LOBBY = 2; // Minimum number of players required to start
     private const int LOBBY_COUNTDOWN_TIME = 20; // Whenever the players reach MINIMUM_PLAYERS_IN_LOBBY, how many seconds has the countdown before starting the match?
 
     [SerializeField] private int lobbyCapacity = 5; // Which is the maximum players that the lobby is able to handle?

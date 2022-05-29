@@ -43,11 +43,8 @@ public class GameManager : NetworkBehaviour
 
     private void Update()
     {
-        if(NetworkManager.Singleton.IsServer && currentGameState.Value.CompareTo(GameState.Match) == 0)
+        if (NetworkManager.Singleton.IsServer && currentGameState.Value.CompareTo(GameState.Match) == 0)
         {
-            // Update statistics
-            matchStatisticsUI.UpdateMatchStatistics(MatchStatistics.GetInstance().GetStatistics());
-
             bool isVictory = victoryChecker.CheckConditions(matchSecondsLeft.Value);
             if(isVictory)
             {
@@ -119,6 +116,7 @@ public class GameManager : NetworkBehaviour
         uiManager.ActivateEndMatch();
         Debug.Log("[Client] Match ended");
         //Update statistics
+        Debug.Log("2");
         matchStatisticsUI.UpdateMatchStatistics(MatchStatistics.GetInstance().GetStatistics());
     }
 
@@ -149,8 +147,6 @@ public class GameManager : NetworkBehaviour
             yield return new WaitForSeconds(1f);
             matchSecondsLeft.Value--;
         }
-
-        FinishGame_Server();
     }
 
     private void SetCountdown(int timeLeft)

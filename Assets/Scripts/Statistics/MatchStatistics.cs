@@ -35,14 +35,6 @@ public class MatchStatistics : NetworkBehaviour
         }
     }
 
-    public void RemovePlayerStatistics(ulong id)
-    {
-        if (NetworkManager.Singleton.IsServer)
-        {
-
-        }
-    }
-
     public IReadOnlyList<PlayerMatchStatisticsData> GetStatistics()
     {
         List<PlayerMatchStatisticsData> resultList = new List<PlayerMatchStatisticsData>();
