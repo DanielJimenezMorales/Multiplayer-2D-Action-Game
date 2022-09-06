@@ -41,4 +41,4 @@ This game implements a few network features such as:
 6. Now you are ready to play!
 
 ## GAMEPLAY VIDEO:
-[![Gameplay video](./gameplayVideo.mp4)]
+[![Gameplay Video]](https://www.youtube.com/watch?v=5LvD5Uq_zbs)
