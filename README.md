@@ -33,4 +33,8 @@ This game implements a few network features such as:
 
 ## HOW TO INSTALL:
 1. Go to the project Releases and open the one called _"Final version"_
-2. Download the file called PracticaEM.exe
+2. Download the file called _"PracticaEM.exe"_
+3. In order to play, open at least 3 game windows (One for the server and two more for clients)
+4. In the server window click on _"Start Server"_ button.
+5. In the clients window click on _"Start Client"_ button.
+6. Now you are ready to play!
