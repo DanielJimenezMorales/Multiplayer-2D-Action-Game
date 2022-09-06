@@ -41,3 +41,4 @@ This game implements a few network features such as:
 6. Now you are ready to play!
 
 ## GAMEPLAY VIDEO:
+[![Video de youtube](./dishonorfactions/src/main/resources/static/Art/loginBackground.png)](https://www.youtube.com/watch?v=QYS7m6yYvzA)
