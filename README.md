@@ -32,3 +32,5 @@ This game implements a few network features such as:
 * End of match statistics
 
 ## HOW TO INSTALL:
+* 1. Go to the project Releases and open the one called _"Final version"_
+* 2. Download the file called PracticaEM.exe
