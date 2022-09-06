@@ -14,7 +14,7 @@
 * [GAMEPLAY VIDEO](#Gameplay-video)
 
 ## INTRODUCTION:
-This project is an 2D Action Game made with Unity3D.
+This project is a 2D Action Game made with Unity.
 
 ## TECHNICAL INFORMATION:
 Game engine: Unity3D
